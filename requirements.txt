@@ -1,8 +1,4 @@
 fastapi
 uvicorn
-transformers
-accelerate
-torch
-bitsandbytes
-peft
-sentencepiece
+requests
+python-dotenv
