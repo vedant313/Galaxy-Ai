@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Galaxy AI — ChatGPT 5.1 UI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">🌌</div>
+        <div class="brand-text">
+          <div class="brand-title">Galaxy AI</div>
+          <div class="brand-sub">Hinglish-ready</div>
+        </div>
+      </div>
+
+      <button id="newChatBtn" class="btn new-chat">+ New chat</button>
+
+      <div class="search-wrap">
+        <input id="searchInput" placeholder="Search chats" autocomplete="off" />
+      </div>
+
+      <nav id="chatsList" class="chats"></nav>
+
+      <div class="sidebar-bottom">
+        <div class="footer-actions">
+          <button id="exportBtn" class="ghost">Export</button>
+          <button id="clearBtn" class="ghost danger">Clear</button>
+        </div>
+
+        <div class="profile">
+          <div class="avatar">VB</div>
+          <div class="meta">
+            <div class="name">Vedant</div>
+            <div class="small">Galaxy Tech</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <header class="topbar">
+        <div class="top-left">
+          <div class="top-title">Galaxy AI</div>
+        </div>
+        <div class="top-controls">
+          <button id="shareBtn" class="icon-btn">Share</button>
+          <button id="menuBtn" class="icon-btn">⋯</button>
+        </div>
+      </header>
+
+      <section class="chat-area">
+        <div id="messages" class="messages">
+          <div class="welcome-card">
+            <h2>Welcome to Galaxy AI 🚀</h2>
+            <p>Type your message. I reply in Hinglish/Hindi/English.</p>
+            <div class="quick-actions">
+              <button id="sampleBtn" class="ghost">Try “Hi”</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NEW PERFECT CHATGPT COMPOSER -->
+      <footer class="composer">
+        <div class="composer-box">
+
+          <button id="attachBtn" class="c-btn attach">＋</button>
+
+          <textarea id="userInput"
+                    placeholder="Ask anything..."
+                    rows="1"
+                    autocomplete="off"></textarea>
+
+          <button id="micBtn" class="c-btn mic">🎙️</button>
+          <button id="sendBtn" class="c-btn send">➤</button>
+
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

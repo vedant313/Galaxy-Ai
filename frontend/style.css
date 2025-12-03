@@ -1,0 +1,346 @@
+/* ---------------------------------------
+   CHATGPT 5.1 PERFECT CLONE (Galaxy AI)
+-----------------------------------------*/
+
+:root{
+  --bg:#0b0b0b;
+  --panel:#101010;
+  --muted:#9a9a9a;
+  --accent:#0ea5ff;
+  --bubble:#1a1a1a;
+  --bubble-user:#0b61d8;
+  --radius:18px;
+  --font:"Inter", system-ui;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,body{
+  height:100%;
+  overflow:hidden;
+}
+
+body{
+  background:#0b0b0b;
+  color:#eaeaea;
+  font-family:var(--font);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* APP LAYOUT -------------------------------------------*/
+.app{
+  display:flex;
+  height:100vh;
+  width:100vw;
+}
+
+/* SIDEBAR -----------------------------------------------*/
+.sidebar{
+  width:300px;
+  background:#0f0f0f;
+  border-right:1px solid rgba(255,255,255,0.05);
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.logo{
+  width:44px;height:44px;border-radius:10px;
+  background:#1b2b33;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+
+.brand-title{font-weight:600;font-size:16px;}
+.brand-sub{font-size:12px;color:var(--muted);}
+
+.btn.new-chat{
+  margin-top:6px;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:#093254;
+  color:white;
+  cursor:pointer;
+}
+
+.search-wrap{
+  margin-top:10px;margin-bottom:10px;
+}
+
+.search-wrap input{
+  width:100%;
+  padding:10px 14px;
+  border-radius:8px;
+  background:#000;
+  border:1px solid rgba(255,255,255,0.08);
+  color:#ccc;
+  outline:none;
+}
+
+/* chat list */
+.chats{
+  flex:1;
+  overflow-y:auto;
+  padding-right:4px;
+}
+
+.chat-item{
+  display:flex;
+  gap:12px;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.15s;
+}
+
+.chat-item:hover{
+  background:rgba(255,255,255,0.06);
+}
+
+.chat-item .avatar{
+  width:40px;height:40px;border-radius:10px;
+  background:#1c1c1c;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:bold;
+}
+
+.meta .title{font-size:14px;}
+.meta .sub{font-size:12px;color:var(--muted);}
+
+/* SIDEBAR BOTTOM */
+.sidebar-bottom{
+  margin-top:auto;
+}
+
+.footer-actions{
+  display:flex;
+  gap:8px;
+}
+
+.ghost{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.1);
+  padding:8px 12px;
+  border-radius:8px;
+  color:var(--muted);
+  cursor:pointer;
+}
+
+.danger{color:#ff6b6b;}
+
+.profile{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+  align-items:center;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+
+.avatar{
+  width:42px;height:42px;
+  border-radius:10px;
+  background:#151515;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;
+}
+
+/* MAIN --------------------------------------------------*/
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* TOP BAR */
+.topbar{
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+.top-title{
+  font-size:16px;
+  font-weight:600;
+}
+
+.icon-btn{
+  background:transparent;
+  border:none;
+  color:#ccc;
+  cursor:pointer;
+  padding:6px 10px;
+}
+
+/* CHAT AREA --------------------------------------------*/
+.chat-area{
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  justify-content:center;
+  padding-top:26px;
+}
+
+.messages{
+  width:100%;
+  max-width:950px;
+  padding:0 18px 120px 18px;
+}
+
+/* WELCOME CARD */
+
+.welcome-card{
+  padding:24px;
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;
+  background:#111;
+  margin-top:18px;
+}
+
+.welcome-card h2{margin-bottom:6px;font-size:20px;}
+.welcome-card p{opacity:0.7;margin-bottom:12px;}
+
+.quick-actions .ghost{
+  margin-right:12px;
+  padding:8px 14px;
+}
+
+/* MESSAGE BUBBLES -------------------------------------*/
+.msg-row{
+  display:flex;
+  margin:18px 0;
+  gap:12px;
+}
+
+.msg-row.ai{justify-content:flex-start;}
+.msg-row.user{justify-content:flex-end;}
+
+.message{
+  background:var(--bubble);
+  padding:14px 18px;
+  border-radius:var(--radius);
+  max-width:70%;
+  font-size:15px;
+  white-space:pre-wrap;
+  line-height:1.4;
+}
+
+.msg-row.user .message{
+  background:#0b61d8;
+  color:white;
+  border-radius:16px 16px 6px 16px;
+}
+
+.small-meta{
+  font-size:11px;
+  opacity:0.6;
+  align-self:flex-end;
+}
+
+/* TYPING -----------------------------------------------*/
+.typing-dots{
+  display:flex;
+  gap:5px;
+}
+
+.typing-dots span{
+  width:6px;height:6px;border-radius:50%;
+  background:#888;
+  animation:blink 1s infinite;
+}
+
+@keyframes blink{
+  0%{opacity:.3;}50%{opacity:1;}100%{opacity:.3;}
+}
+
+/* COMPOSER — EXACT CHATGPT CLONE -----------------------*/
+.composer{
+  position:fixed;
+  bottom:0;
+  left:300px;
+  right:0;
+  padding:16px 0;
+  background:linear-gradient(180deg,#0b0b0bcc,#0b0b0bff);
+  display:flex;
+  justify-content:center;
+  z-index:15;
+}
+
+.composer-box{
+  width:100%;
+  max-width:950px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 20px;
+}
+
+/* attach */
+.c-btn.attach{
+  width:40px;height:40px;
+  border-radius:10px;
+  background:#1a1a1a;
+  border:1px solid #222;
+  color:white;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* textarea bubble */
+#userInput{
+  flex:1;
+  padding:14px 18px;
+  background:#161616;
+  border-radius:20px;
+  border:1px solid #333;
+  color:white;
+  resize:none;
+  font-size:15px;
+  max-height:160px;
+  outline:none;
+}
+
+/* mic */
+.c-btn.mic{
+  width:42px;height:42px;
+  border-radius:50%;
+  border:none;
+  background:#1f1f1f;
+  font-size:20px;
+  cursor:pointer;
+  color:white;
+}
+
+/* send */
+.c-btn.send{
+  width:42px;height:42px;
+  border-radius:50%;
+  background:#0066ff;
+  border:none;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+}
+
+/* MOBILE ----------------------------------------------*/
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .composer{left:0;}
+  .composer-box{max-width:92%;}
+}
