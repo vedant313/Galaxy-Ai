@@ -1,16 +1,14 @@
-// ========================================
-//  GALAXY AI — PREMIUM JS (2025 UPDATE)
-//  Faster • Cleaner • Mobile-Premium UI
-// ========================================
+// ============================================================
+//  GALAXYX AI — FINAL PREMIUM JS (2025 POLISHED EDITION)
+//  Smooth • Fast • Mobile-Perfect • Bug-Free
+// ============================================================
 
 // === CONFIG ===
-// 👇 Your Render backend URL
 const API_URL = "https://galaxy-ai-3.onrender.com/chat";
 
-
-// ----------------------------------------
-// DOM ELEMENTS
-// ----------------------------------------
+// ------------------------------------------------------------
+// DOM ELEMENTS (SAFE REFERENCES)
+// ------------------------------------------------------------
 const chatsList = document.getElementById("chatsList");
 const newChatBtn = document.getElementById("newChatBtn");
 const searchInput = document.getElementById("searchInput");
@@ -25,10 +23,9 @@ const shareBtn = document.getElementById("shareBtn");
 const menuBtn = document.getElementById("menuBtn");
 const sidebar = document.querySelector(".sidebar");
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // UTILITIES
-// ----------------------------------------
+// ------------------------------------------------------------
 let chats = JSON.parse(localStorage.getItem("galaxy_chats_v2") || "[]");
 let activeChatId = null;
 
@@ -38,111 +35,117 @@ const uid = () =>
 const nowTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
+const escapeHTML = (t) =>
+  t.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 function save() {
   localStorage.setItem("galaxy_chats_v2", JSON.stringify(chats));
 }
-
 function findChat(id) {
   return chats.find((c) => c.id === id);
 }
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // SIDEBAR MOBILE TOGGLE
-// ----------------------------------------
+// ------------------------------------------------------------
 if (menuBtn) {
   menuBtn.onclick = () => {
     sidebar.classList.toggle("open");
+    document.body.classList.toggle("mobile-open", sidebar.classList.contains("open"));
   };
 }
 
+// Auto-close sidebar on outside tap (mobile)
+document.addEventListener("click", (e) => {
+  if (window.innerWidth > 900) return;
 
-// ----------------------------------------
+  if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+    sidebar.classList.remove("open");
+    document.body.classList.remove("mobile-open");
+  }
+});
+
+// ------------------------------------------------------------
 // RENDER CHAT LIST
-// ----------------------------------------
+// ------------------------------------------------------------
 function renderChatList(filter = "") {
   chatsList.innerHTML = "";
 
-  const list = chats.slice().reverse();
-
-  list
-    .filter((c) => (c.title || "").toLowerCase().includes(filter.toLowerCase()))
+  chats
+    .slice()
+    .reverse()
+    .filter((c) =>
+      (c.title || "New Chat").toLowerCase().includes(filter.toLowerCase())
+    )
     .forEach((chat) => {
       const el = document.createElement("div");
       el.className = "chat-item";
       el.dataset.id = chat.id;
 
       el.innerHTML = `
-        <div class="avatar">${(chat.title || "Chat")
-          .slice(0, 2)
-          .toUpperCase()}</div>
+        <div class="avatar">${(chat.title || "NC").slice(0, 2).toUpperCase()}</div>
         <div class="meta">
-            <div class="title">${chat.title || "New chat"}</div>
-            <div class="sub">${chat.last || "No messages yet"}</div>
+          <div class="title">${chat.title}</div>
+          <div class="sub">${chat.last || "No messages yet"}</div>
         </div>
       `;
 
       el.onclick = () => {
         openChat(chat.id);
-        sidebar.classList.remove("open"); // auto-close on mobile
+        sidebar.classList.remove("open");
+        document.body.classList.remove("mobile-open");
       };
 
       chatsList.appendChild(el);
     });
 }
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // OPEN CHAT
-// ----------------------------------------
+// ------------------------------------------------------------
 function openChat(id) {
   activeChatId = id;
   const chat = findChat(id);
 
   messagesEl.innerHTML = "";
 
-  if (!chat || !chat.messages.length) showWelcome();
-  else chat.messages.forEach((m) => appendMessage(m.text, m.role, m.time));
+  if (!chat || !chat.messages.length) return showWelcome();
 
-  scrollToBottom();
+  chat.messages.forEach((m) => appendMessage(m.text, m.role, m.time));
+  scrollToBottom(true);
 }
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // WELCOME CARD
-// ----------------------------------------
+// ------------------------------------------------------------
 function showWelcome() {
   messagesEl.innerHTML = `
     <div class="welcome-card">
       <h2>Welcome to GalaxyX AI 🚀</h2>
       <p>Type your message below.</p>
-      <button id="sampleBtnInner" class="ghost">Try: "Hi"</button>
+      <button class="ghost" id="sampleBtnInner">Try "Hi"</button>
     </div>
   `;
 
-  const b = document.getElementById("sampleBtnInner");
-  if (b) {
-    b.onclick = () => {
-      userInput.value = "Hi";
-      adjustTextarea();
-      userInput.focus();
-    };
-  }
+  document.getElementById("sampleBtnInner").onclick = () => {
+    userInput.value = "Hi";
+    adjustTextarea();
+    userInput.focus();
+  };
 }
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // APPEND MESSAGE
-// ----------------------------------------
+// ------------------------------------------------------------
 function appendMessage(text, role = "ai", time = null) {
   const welcome = messagesEl.querySelector(".welcome-card");
   if (welcome) welcome.remove();
 
   const row = document.createElement("div");
-  row.className = "msg-row " + (role === "user" ? "user" : "ai");
+  row.className = `msg-row ${role}`;
 
   row.innerHTML = `
-    <div class="message">${text}</div>
+    <div class="message">${escapeHTML(text)}</div>
     <div class="small-meta">${time || nowTime()}</div>
   `;
 
@@ -150,10 +153,9 @@ function appendMessage(text, role = "ai", time = null) {
   scrollToBottom();
 }
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // TYPING INDICATOR
-// ----------------------------------------
+// ------------------------------------------------------------
 function showTyping() {
   removeTyping();
 
@@ -171,65 +173,62 @@ function showTyping() {
   scrollToBottom();
 }
 
-function removeTyping() {
+const removeTyping = () => {
   const t = messagesEl.querySelector("[data-typing='1']");
   if (t) t.remove();
-}
+};
 
-
-// ----------------------------------------
-// SCROLL TO BOTTOM
-// ----------------------------------------
-function scrollToBottom() {
+// ------------------------------------------------------------
+// SCROLL
+// ------------------------------------------------------------
+function scrollToBottom(now = false) {
   setTimeout(() => {
     const area = document.querySelector(".chat-area");
-    if (area) area.scrollTop = area.scrollHeight;
-  }, 20);
+    area.scrollTop = area.scrollHeight;
+  }, now ? 5 : 40);
 }
 
-
-// ----------------------------------------
-// CREATE NEW CHAT
-// ----------------------------------------
+// ------------------------------------------------------------
+// NEW CHAT
+// ------------------------------------------------------------
 function createNewChat() {
   const id = uid();
   chats.push({ id, title: "New Chat", last: "", messages: [] });
   save();
+
   renderChatList();
   openChat(id);
 }
 
-
-// ----------------------------------------
-// TEXTAREA AUTO-RESIZE
-// ----------------------------------------
+// ------------------------------------------------------------
+// TEXTAREA AUTO RESIZE
+// ------------------------------------------------------------
 function adjustTextarea() {
   userInput.style.height = "auto";
   userInput.style.height = Math.min(160, userInput.scrollHeight) + "px";
 }
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // SEND MESSAGE
-// ----------------------------------------
+// ------------------------------------------------------------
 async function sendMessage() {
   const text = userInput.value.trim();
   if (!text) return;
 
   if (!activeChatId) createNewChat();
+
   const chat = findChat(activeChatId);
-
   const t = nowTime();
-  chat.messages.push({ role: "user", text, time: t });
-  chat.last = text.slice(0, 50);
-  save();
 
+  chat.messages.push({ role: "user", text, time: t });
+  chat.last = text.slice(0, 40);
+  chat.title = chat.title === "New Chat" ? text.slice(0, 18) : chat.title;
+
+  save();
   appendMessage(text, "user", t);
 
   userInput.value = "";
   adjustTextarea();
-  userInput.focus();
-
   showTyping();
 
   try {
@@ -239,17 +238,18 @@ async function sendMessage() {
       body: JSON.stringify({ text }),
     });
 
-    if (!res.ok) throw new Error("Backend error");
+    if (!res.ok) throw new Error("Server error!");
 
-    const json = await res.json();
-    const reply = json.reply;
+    const data = await res.json();
+    const reply = data.reply || "No reply received.";
 
     removeTyping();
+
     const rt = nowTime();
     appendMessage(reply, "ai", rt);
 
     chat.messages.push({ role: "assistant", text: reply, time: rt });
-    chat.last = reply.slice(0, 60);
+    chat.last = reply.slice(0, 40);
 
     save();
     renderChatList(searchInput.value);
@@ -260,21 +260,21 @@ async function sendMessage() {
   }
 }
 
-
-// ----------------------------------------
-// CLEAR, EXPORT, SHARE
-// ----------------------------------------
+// ------------------------------------------------------------
+// EXTRA CONTROLS
+// ------------------------------------------------------------
 function clearAll() {
   if (!confirm("Clear all chats?")) return;
   chats = [];
   save();
   renderChatList();
-  messagesEl.innerHTML = "";
   showWelcome();
 }
 
 function exportChats() {
-  const blob = new Blob([JSON.stringify(chats, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(chats, null, 2)], {
+    type: "application/json",
+  });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "galaxy_chats.json";
@@ -283,38 +283,40 @@ function exportChats() {
 
 function shareConversation() {
   const chat = findChat(activeChatId);
-  if (!chat) return alert("Open a chat first");
-  const text = chat.messages.map((m) => `${m.role}: ${m.text}`).join("\n\n");
+  if (!chat) return alert("Open a chat first!");
+
+  const text = chat.messages
+    .map((m) => `${m.role.toUpperCase()}: ${m.text}`)
+    .join("\n\n");
+
   navigator.clipboard.writeText(text);
-  alert("Copied!");
+  alert("Conversation copied!");
 }
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // EVENT LISTENERS
-// ----------------------------------------
-newChatBtn.onclick = createNewChat;
-searchInput.oninput = (e) => renderChatList(e.target.value);
-sendBtn.onclick = sendMessage;
-userInput.oninput = adjustTextarea;
+// ------------------------------------------------------------
+if (newChatBtn) newChatBtn.onclick = createNewChat;
+if (searchInput) searchInput.oninput = (e) => renderChatList(e.target.value);
+if (sendBtn) sendBtn.onclick = sendMessage;
+if (clearBtn) clearBtn.onclick = clearAll;
+if (exportBtn) exportBtn.onclick = exportChats;
+if (shareBtn) shareBtn.onclick = shareConversation;
 
-userInput.onkeydown = (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-};
+if (userInput) {
+  userInput.oninput = adjustTextarea;
 
-clearBtn.onclick = clearAll;
-exportBtn.onclick = exportChats;
-attachBtn.onclick = () => alert("Attach coming soon!");
-micBtn.onclick = () => alert("Mic coming soon!");
-shareBtn.onclick = shareConversation;
+  userInput.onkeydown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+}
 
-
-// ----------------------------------------
+// ------------------------------------------------------------
 // INIT APP
-// ----------------------------------------
+// ------------------------------------------------------------
 (function init() {
   if (!chats.length) createNewChat();
   else {
