@@ -1,22 +1,50 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from backend.chat import get_reply
+from backend.chat import generate_reply   # ✅ Correct async function
 
-app = FastAPI()
+app = FastAPI(
+    title="Galaxy AI Backend",
+    description="Official backend for Galaxy Tech Corporation AI",
+    version="2.0.0"
+)
 
+# ----------------------------
+# CORS SETTINGS
+# ----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ----------------------------
+# REQUEST MODEL
+# ----------------------------
 class ChatRequest(BaseModel):
     text: str
-    lang: str | None = None
 
+# ----------------------------
+# HOME ROUTE
+# ----------------------------
+@app.get("/")
+async def home():
+    return {
+        "status": "Galaxy AI Backend Running Successfully 🚀",
+        "developer": "Vedant Bhavsar",
+        "company": "Galaxy Tech Corporation"
+    }
+
+# ----------------------------
+# CHAT ROUTE (MAIN)
+# ----------------------------
 @app.post("/chat")
-def chat(req: ChatRequest):
-    reply = get_reply(req.text)
+async def chat(req: ChatRequest):
+    user_msg = req.text
+
+    # ⛔ generate_reply ASYNC hai → await zaroori
+    reply = await generate_reply(user_msg)
+
     return {"reply": reply}

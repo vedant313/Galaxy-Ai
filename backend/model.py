@@ -2,60 +2,86 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 # ------------------------------------------------------------
-# TinyLlama Model (Fast + Stable)
+# TinyLlama Model (FAST + LIGHT + Stable)
 # ------------------------------------------------------------
-model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-print("🚀 Loading Galaxy AI Model... Please wait...")
+print("🚀 Loading Galaxy AI Local Model...")
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(
-    model_name,
+    MODEL_NAME,
     use_fast=True
 )
 
-# Auto device selection (GPU → CPU)
+# Auto device selection
 device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"💻 Device: {device}")
+dtype = torch.float16 if device == "cuda" else torch.float32
+
+print(f"💻 Device Selected → {device.upper()}")
 
 # Load model
 model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    torch_dtype=torch.float16 if device == "cuda" else torch.float32,
+    MODEL_NAME,
+    torch_dtype=dtype,
     device_map="auto" if device == "cuda" else None
 )
 
-# Move model to CPU manually if no GPU
+# CPU fallback
 if device == "cpu":
     model = model.to(device)
 
-print("✅ Model Loaded Successfully!")
+model.eval()
+
+print("✅ Local Model Loaded Successfully!")
 
 
 # ------------------------------------------------------------
-# FAST GENERATION FUNCTION
+# ULTRA-OPTIMIZED GENERATION FUNCTION
 # ------------------------------------------------------------
 def generate_reply(prompt: str) -> str:
-    """Generate fast, clean reply"""
+    """
+    Ultra-fast reply generator for Galaxy AI local mode.
+    Removes echo, cleans garbage tokens, improves quality.
+    """
 
-    # Tokenize with correct device
-    inputs = tokenizer(prompt, return_tensors="pt").to(device)
+    # Encode user prompt
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=1024
+    ).to(device)
 
-    # Generation
-    output = model.generate(
+    # Generate reply
+    outputs = model.generate(
         **inputs,
-        max_new_tokens=200,
-        temperature=0.7,
+        max_new_tokens=180,
+        temperature=0.65,
         top_p=0.9,
         do_sample=True,
-        repetition_penalty=1.1,
-        eos_token_id=tokenizer.eos_token_id
+        repetition_penalty=1.12,
+        eos_token_id=tokenizer.eos_token_id,
+        pad_token_id=tokenizer.eos_token_id
     )
 
-    reply = tokenizer.decode(output[0], skip_special_tokens=True)
+    # Decode text
+    text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    # Remove prompt from reply
-    if reply.startswith(prompt):
-        reply = reply[len(prompt):].strip()
+    # Remove echoed prompt
+    if text.startswith(prompt):
+        text = text[len(prompt):].strip()
 
-    return reply
+    # Clean unwanted tokens + junk text
+    bad_tokens = [
+        "<unk>", "<s>", "</s>", "###", 
+        "User:", "Assistant:", "assistant", "user"
+    ]
+
+    for token in bad_tokens:
+        text = text.replace(token, "")
+
+    # Remove double spaces
+    text = " ".join(text.split())
+
+    return text.strip()
