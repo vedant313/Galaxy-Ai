@@ -1,13 +1,12 @@
 // ============================================================
-//  GALAXYX AI — FINAL PREMIUM JS (2025 POLISHED EDITION)
-//  Smooth • Fast • Mobile-Perfect • Bug-Free
+//  GALAXYX AI — FINAL PREMIUM JS (2025 SUPER POLISHED EDITION)
+//  All Buttons Fixed • Real Share Link • Typing Animation
 // ============================================================
 
-// === CONFIG ===
 const API_URL = "https://galaxy-ai-3.onrender.com/chat";
 
 // ------------------------------------------------------------
-// DOM ELEMENTS (SAFE REFERENCES)
+// DOM ELEMENTS
 // ------------------------------------------------------------
 const chatsList = document.getElementById("chatsList");
 const newChatBtn = document.getElementById("newChatBtn");
@@ -26,40 +25,44 @@ const sidebar = document.querySelector(".sidebar");
 // ------------------------------------------------------------
 // UTILITIES
 // ------------------------------------------------------------
-let chats = JSON.parse(localStorage.getItem("galaxy_chats_v2") || "[]");
+let chats = JSON.parse(localStorage.getItem("galaxy_chats_v3") || "[]");
 let activeChatId = null;
 
 const uid = () =>
   Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
 const nowTime = () =>
-  new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 const escapeHTML = (t) =>
   t.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function save() {
-  localStorage.setItem("galaxy_chats_v2", JSON.stringify(chats));
+  localStorage.setItem("galaxy_chats_v3", JSON.stringify(chats));
 }
+
 function findChat(id) {
   return chats.find((c) => c.id === id);
 }
 
 // ------------------------------------------------------------
-// SIDEBAR MOBILE TOGGLE
+// SIDEBAR MOBILE
 // ------------------------------------------------------------
-if (menuBtn) {
-  menuBtn.onclick = () => {
-    sidebar.classList.toggle("open");
-    document.body.classList.toggle("mobile-open", sidebar.classList.contains("open"));
-  };
-}
+menuBtn.onclick = () => {
+  sidebar.classList.toggle("open");
+  document.body.classList.toggle(
+    "mobile-open",
+    sidebar.classList.contains("open")
+  );
+};
 
-// Auto-close sidebar on outside tap (mobile)
 document.addEventListener("click", (e) => {
   if (window.innerWidth > 900) return;
 
-  if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+  if (!sidebar.contains(e.target) && e.target !== menuBtn) {
     sidebar.classList.remove("open");
     document.body.classList.remove("mobile-open");
   }
@@ -78,25 +81,27 @@ function renderChatList(filter = "") {
       (c.title || "New Chat").toLowerCase().includes(filter.toLowerCase())
     )
     .forEach((chat) => {
-      const el = document.createElement("div");
-      el.className = "chat-item";
-      el.dataset.id = chat.id;
+      const div = document.createElement("div");
+      div.className = "chat-item";
+      div.dataset.id = chat.id;
 
-      el.innerHTML = `
-        <div class="avatar">${(chat.title || "NC").slice(0, 2).toUpperCase()}</div>
+      div.innerHTML = `
+        <div class="avatar">${(chat.title || "NC")
+          .slice(0, 2)
+          .toUpperCase()}</div>
         <div class="meta">
           <div class="title">${chat.title}</div>
           <div class="sub">${chat.last || "No messages yet"}</div>
         </div>
       `;
 
-      el.onclick = () => {
+      div.onclick = () => {
         openChat(chat.id);
         sidebar.classList.remove("open");
         document.body.classList.remove("mobile-open");
       };
 
-      chatsList.appendChild(el);
+      chatsList.appendChild(div);
     });
 }
 
@@ -111,42 +116,37 @@ function openChat(id) {
 
   if (!chat || !chat.messages.length) return showWelcome();
 
-  chat.messages.forEach((m) => appendMessage(m.text, m.role, m.time));
+  chat.messages.forEach((m) =>
+    appendMessage(m.text, m.role === "assistant" ? "ai" : m.role, m.time)
+  );
   scrollToBottom(true);
 }
 
 // ------------------------------------------------------------
-// WELCOME CARD
+// WELCOME
 // ------------------------------------------------------------
 function showWelcome() {
   messagesEl.innerHTML = `
     <div class="welcome-card">
       <h2>Welcome to GalaxyX AI 🚀</h2>
       <p>Type your message below.</p>
-      <button class="ghost" id="sampleBtnInner">Try "Hi"</button>
     </div>
   `;
-
-  document.getElementById("sampleBtnInner").onclick = () => {
-    userInput.value = "Hi";
-    adjustTextarea();
-    userInput.focus();
-  };
 }
 
 // ------------------------------------------------------------
 // APPEND MESSAGE
 // ------------------------------------------------------------
-function appendMessage(text, role = "ai", time = null) {
-  const welcome = messagesEl.querySelector(".welcome-card");
-  if (welcome) welcome.remove();
+function appendMessage(text, role = "ai", time = nowTime()) {
+  const w = messagesEl.querySelector(".welcome-card");
+  if (w) w.remove();
 
   const row = document.createElement("div");
   row.className = `msg-row ${role}`;
 
   row.innerHTML = `
     <div class="message">${escapeHTML(text)}</div>
-    <div class="small-meta">${time || nowTime()}</div>
+    <div class="small-meta">${time}</div>
   `;
 
   messagesEl.appendChild(row);
@@ -161,11 +161,11 @@ function showTyping() {
 
   const row = document.createElement("div");
   row.className = "msg-row ai";
-  row.dataset.typing = "1";
+  row.dataset.typing = "true";
 
   row.innerHTML = `
-    <div class="message">
-      <span class="typing-dots"><span></span><span></span><span></span></span>
+    <div class="message typing-dots">
+      <span></span><span></span><span></span>
     </div>
   `;
 
@@ -173,19 +173,19 @@ function showTyping() {
   scrollToBottom();
 }
 
-const removeTyping = () => {
-  const t = messagesEl.querySelector("[data-typing='1']");
+function removeTyping() {
+  const t = messagesEl.querySelector("[data-typing='true']");
   if (t) t.remove();
-};
+}
 
 // ------------------------------------------------------------
 // SCROLL
 // ------------------------------------------------------------
-function scrollToBottom(now = false) {
+function scrollToBottom(immediate = false) {
   setTimeout(() => {
     const area = document.querySelector(".chat-area");
     area.scrollTop = area.scrollHeight;
-  }, now ? 5 : 40);
+  }, immediate ? 10 : 40);
 }
 
 // ------------------------------------------------------------
@@ -193,9 +193,15 @@ function scrollToBottom(now = false) {
 // ------------------------------------------------------------
 function createNewChat() {
   const id = uid();
-  chats.push({ id, title: "New Chat", last: "", messages: [] });
-  save();
 
+  chats.push({
+    id,
+    title: "New Chat",
+    last: "",
+    messages: [],
+  });
+
+  save();
   renderChatList();
   openChat(id);
 }
@@ -205,7 +211,7 @@ function createNewChat() {
 // ------------------------------------------------------------
 function adjustTextarea() {
   userInput.style.height = "auto";
-  userInput.style.height = Math.min(160, userInput.scrollHeight) + "px";
+  userInput.style.height = Math.min(150, userInput.scrollHeight) + "px";
 }
 
 // ------------------------------------------------------------
@@ -216,19 +222,20 @@ async function sendMessage() {
   if (!text) return;
 
   if (!activeChatId) createNewChat();
-
   const chat = findChat(activeChatId);
+
   const t = nowTime();
 
   chat.messages.push({ role: "user", text, time: t });
   chat.last = text.slice(0, 40);
-  chat.title = chat.title === "New Chat" ? text.slice(0, 18) : chat.title;
+  chat.title = chat.title === "New Chat" ? text.slice(0, 16) : chat.title;
 
   save();
   appendMessage(text, "user", t);
 
   userInput.value = "";
   adjustTextarea();
+
   showTyping();
 
   try {
@@ -238,10 +245,8 @@ async function sendMessage() {
       body: JSON.stringify({ text }),
     });
 
-    if (!res.ok) throw new Error("Server error!");
-
     const data = await res.json();
-    const reply = data.reply || "No reply received.";
+    const reply = data.reply || "No response received.";
 
     removeTyping();
 
@@ -253,66 +258,107 @@ async function sendMessage() {
 
     save();
     renderChatList(searchInput.value);
-
   } catch (err) {
     removeTyping();
-    appendMessage("⚠ Error: " + err.message, "ai", nowTime());
+    appendMessage("⚠ Server error: " + err.message, "ai", nowTime());
   }
 }
 
 // ------------------------------------------------------------
-// EXTRA CONTROLS
+// EXPORT CHATS
 // ------------------------------------------------------------
-function clearAll() {
-  if (!confirm("Clear all chats?")) return;
-  chats = [];
-  save();
-  renderChatList();
-  showWelcome();
-}
-
 function exportChats() {
   const blob = new Blob([JSON.stringify(chats, null, 2)], {
     type: "application/json",
   });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "galaxy_chats.json";
+  a.download = "galaxyx_chats.json";
   a.click();
 }
 
+// ------------------------------------------------------------
+// CLEAR ALL
+// ------------------------------------------------------------
+function clearAll() {
+  if (!confirm("Delete all chats?")) return;
+  chats = [];
+  save();
+  renderChatList();
+  showWelcome();
+}
+
+// ------------------------------------------------------------
+// 🔥 REAL SHARE LINK (ChatGPT Style)
+// ------------------------------------------------------------
+// We encode entire chat into base64 so user can open URL and restore chat.
 function shareConversation() {
   const chat = findChat(activeChatId);
   if (!chat) return alert("Open a chat first!");
 
-  const text = chat.messages
-    .map((m) => `${m.role.toUpperCase()}: ${m.text}`)
-    .join("\n\n");
+  const encoded = btoa(JSON.stringify(chat)); // Base64
+  const url = `${location.origin}?share=${encoded}`;
 
-  navigator.clipboard.writeText(text);
-  alert("Conversation copied!");
+  navigator.clipboard.writeText(url);
+  alert("Sharable link copied!");
 }
 
-// ------------------------------------------------------------
-// EVENT LISTENERS
-// ------------------------------------------------------------
-if (newChatBtn) newChatBtn.onclick = createNewChat;
-if (searchInput) searchInput.oninput = (e) => renderChatList(e.target.value);
-if (sendBtn) sendBtn.onclick = sendMessage;
-if (clearBtn) clearBtn.onclick = clearAll;
-if (exportBtn) exportBtn.onclick = exportChats;
-if (shareBtn) shareBtn.onclick = shareConversation;
+// Auto-load shared chat if ?share= is present
+(function loadSharedChat() {
+  const params = new URLSearchParams(location.search);
+  const data = params.get("share");
 
-if (userInput) {
-  userInput.oninput = adjustTextarea;
-
-  userInput.onkeydown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+  if (data) {
+    try {
+      const chat = JSON.parse(atob(data));
+      chats.push(chat);
+      save();
+      renderChatList();
+      openChat(chat.id);
+    } catch (e) {
+      console.error("Share decode error:", e);
     }
-  };
-}
+  }
+})();
+
+// ------------------------------------------------------------
+// ATTACH BUTTON ANIMATION
+// ------------------------------------------------------------
+attachBtn.onclick = () => {
+  attachBtn.animate(
+    [{ transform: "rotate(0deg)" }, { transform: "rotate(20deg)" }, { transform: "rotate(0deg)" }],
+    { duration: 220 }
+  );
+};
+
+// ------------------------------------------------------------
+// MIC BUTTON (placeholder animation)
+// ------------------------------------------------------------
+micBtn.onclick = () => {
+  micBtn.animate(
+    [{ transform: "scale(1)" }, { transform: "scale(0.92)" }, { transform: "scale(1)" }],
+    { duration: 200 }
+  );
+};
+
+// ------------------------------------------------------------
+// EVENTS
+// ------------------------------------------------------------
+newChatBtn.onclick = createNewChat;
+searchInput.oninput = (e) => renderChatList(e.target.value);
+sendBtn.onclick = sendMessage;
+clearBtn.onclick = clearAll;
+exportBtn.onclick = exportChats;
+shareBtn.onclick = shareConversation;
+
+userInput.oninput = adjustTextarea;
+
+userInput.onkeydown = (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+};
 
 // ------------------------------------------------------------
 // INIT APP
