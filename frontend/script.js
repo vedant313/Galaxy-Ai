@@ -1,6 +1,6 @@
 // === CONFIG ===
 // 👇 YOUR RENDER BACKEND URL
-const API_URL = "https://galaxy-ai-3.onrender.com/chat";
+const API_URL = "https://galaxy-ai-3.onrender.com";
 
 /* DOM */
 const chatsList = document.getElementById("chatsList");
