@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from backend.chat import generate_reply   # ✅ Correct async function
 
 app = FastAPI(
-    title="Galaxy AI Backend",
+    title="GalaxyX AI Backend",
     description="Official backend for Galaxy Tech Corporation AI",
     version="2.0.0"
 )
@@ -32,7 +32,7 @@ class ChatRequest(BaseModel):
 @app.get("/")
 async def home():
     return {
-        "status": "Galaxy AI Backend Running Successfully 🚀",
+        "status": "GalaxyX AI Backend Running Successfully 🚀",
         "developer": "Vedant Bhavsar",
         "company": "Galaxy Tech Corporation"
     }

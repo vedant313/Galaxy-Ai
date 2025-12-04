@@ -114,7 +114,7 @@ function openChat(id) {
 function showWelcome() {
   messagesEl.innerHTML = `
     <div class="welcome-card">
-      <h2>Welcome to Galaxy AI 🚀</h2>
+      <h2>Welcome to GalaxyX AI 🚀</h2>
       <p>Type your message below.</p>
       <button id="sampleBtnInner" class="ghost">Try: "Hi"</button>
     </div>

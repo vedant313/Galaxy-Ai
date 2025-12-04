@@ -17,7 +17,7 @@ HEADERS = {
 }
 
 SYSTEM_PROMPT = (
-    "Tum Galaxy AI ho — ek ultra-smart Hinglish AI assistant. "
+    "Tum GalaxyX AI ho — ek ultra-smart Hinglish AI assistant. "
     "Galaxy Tech Corporation ke founder Vedant Bhavsar hain."
 )
 

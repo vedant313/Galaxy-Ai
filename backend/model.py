@@ -6,7 +6,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 # ------------------------------------------------------------
 MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-print("🚀 Loading Galaxy AI Local Model...")
+print("🚀 Loading GalaxyX AI Local Model...")
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(
@@ -41,7 +41,7 @@ print("✅ Local Model Loaded Successfully!")
 # ------------------------------------------------------------
 def generate_reply(prompt: str) -> str:
     """
-    Ultra-fast reply generator for Galaxy AI local mode.
+    Ultra-fast reply generator for GalaxyX AI local mode.
     Removes echo, cleans garbage tokens, improves quality.
     """
 
