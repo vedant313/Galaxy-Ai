@@ -1,6 +1,6 @@
 /* ============================================================
    GALAXYX AI — ULTRA PREMIUM UI (2025 EDITION)
-   Final Polished Version — ChatGPT + Grok Hybrid Look
+   Fixed Sidebar Transparency + Layering Issues
 ============================================================ */
 
 :root {
@@ -35,17 +35,19 @@ html, body {
 }
 
 /* ============================================================
-   SIDEBAR — PREMIUM
+   SIDEBAR — FIXED TRANSPARENCY + BLUR
 ============================================================ */
 .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, rgb(0, 0, 0), rgb(0, 0, 0));
+  background: linear-gradient(180deg, rgba(3,3,4,0.98), rgba(10,10,11,0.99));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-right: 1px solid rgba(255,255,255,0.05);
   padding: 18px;
   display: flex;
   flex-direction: column;
   transition: transform .25s ease;
-  z-index: 9999;
+  z-index: 10003; /* highest layer */
 }
 
 .brand {
@@ -78,7 +80,7 @@ html, body {
   transition: .2s;
 }
 .btn.new-chat:hover {
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(255,255,255,0.08);
 }
 
 .search-wrap input {
@@ -151,7 +153,7 @@ html, body {
 }
 
 /* ============================================================
-   MAIN & TOPBAR (ChatGPT Style)
+   MAIN & TOPBAR
 ============================================================ */
 .main {
   flex: 1;
@@ -169,7 +171,6 @@ html, body {
   padding: 0 22px;
 }
 
-/* HAMBURGER BTN (Two-line ChatGPT Style) */
 .hamburger-btn {
   background: transparent;
   border: none;
@@ -261,7 +262,7 @@ html, body {
 }
 
 /* ============================================================
-   COMPOSER
+   COMPOSER (FIXED LAYERING)
 ============================================================ */
 .composer {
   position: fixed;
@@ -269,9 +270,13 @@ html, body {
   right: 0;
   bottom: calc(env(safe-area-inset-bottom) + 10px);
   padding: 14px 22px;
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.45));
-  backdrop-filter: blur(6px);
-  border-top: 1px solid rgb(255, 255, 255);
+
+  /* FIX: make composer solid, remove ghosting */
+  background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.95));
+  border-top: 1px solid rgba(255,255,255,0.04);
+
+  backdrop-filter: none;
+  z-index: 10001; /* below overlay & sidebar */
 }
 
 .composer-box {
@@ -312,7 +317,7 @@ html, body {
 }
 
 /* ============================================================
-   MOBILE RESPONSIVE SIDEBAR
+   MOBILE RESPONSIVE SIDEBAR (FIXED)
 ============================================================ */
 @media(max-width:900px) {
 
@@ -322,19 +327,22 @@ html, body {
     height: 100%;
     width: 78%;
     max-width: 280px;
-    background: #000000;
     transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
+    z-index: 10003;
   }
 
+  .sidebar.open {
+    transform: translateX(0);
+    z-index: 10003;
+  }
+
+  /* Dark overlay behind sidebar */
   body.mobile-open::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgb(0, 0, 0);
-    z-index: 9998;
+    background: rgba(0, 0, 0, 0.60);
+    z-index: 10002;
   }
 
   .composer { left: 0; padding: 12px 16px; }
