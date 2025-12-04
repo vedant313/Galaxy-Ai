@@ -39,7 +39,7 @@ html, body {
 ============================================================ */
 .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+  background: linear-gradient(180deg, rgb(0, 0, 0), rgb(0, 0, 0));
   border-right: 1px solid rgba(255,255,255,0.05);
   padding: 18px;
   display: flex;
@@ -73,12 +73,12 @@ html, body {
   font-weight: 600;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.03);
+  background: rgb(0, 0, 0);
   cursor: pointer;
   transition: .2s;
 }
 .btn.new-chat:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .search-wrap input {
@@ -271,7 +271,7 @@ html, body {
   padding: 14px 22px;
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.45));
   backdrop-filter: blur(6px);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgb(255, 255, 255);
 }
 
 .composer-box {
@@ -286,7 +286,7 @@ html, body {
   flex: 1;
   padding: 14px 16px;
   border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgb(24, 23, 23);
   background: #0c0c0c;
   resize: none;
   color: white;
@@ -297,7 +297,7 @@ html, body {
   width: 46px;
   height: 46px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.04);
+  background: rgb(0, 0, 0);
   border: none;
   color: var(--muted);
   display: flex;
