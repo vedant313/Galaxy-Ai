@@ -1,396 +1,221 @@
-/* ---------------------------------------
-   GALAXY AI — ULTRA PREMIUM UI (2025)
-   Fully Responsive — Desktop + Mobile
-   Smooth Animations + Glass Effect
------------------------------------------*/
+/* =========================================
+   GROK + CHATGPT STYLE — CLEAN PROFESSIONAL 2025
+========================================= */
 
-:root{
-  --bg:#0a0a0a;
-  --panel:#0f0f0f;
-  --muted:#a9a9a9;
-  --accent:#0ea5ff;
-  --bubble:#1a1a1a;
-  --bubble-user:#0b61d8;
-  --radius:18px;
-  --font:"Inter", system-ui;
+:root {
+  --bg: #000000;
+  --sidebar: #111111;
+  --input: #1a1a1a;
+  --bubble-ai: #1e1e1e;
+  --bubble-user: #007bff;
+  --text: #ffffff;
+  --text-muted: #aaaaaa;
+  --border: #2a2a2a;
+  --radius: 12px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-html,body{
-  height:100%;
-  overflow:hidden;
+body, html {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  overflow: hidden;
 }
 
-body{
-  background:var(--bg);
-  color:#eee;
-  font-family:var(--font);
-  -webkit-font-smoothing:antialiased;
+.app {
+  display: flex;
+  height: 100vh;
 }
 
-/* ================================
-      LAYOUT
-=================================*/
-.app{
-  display:flex;
-  height:100vh;
-  width:100vw;
+/* Sidebar — Clean & Minimal */
+.sidebar {
+  width: 260px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* ================================
-      SIDEBAR
-=================================*/
-.sidebar{
-  width:290px;
-  background:rgba(15,15,15,0.9);
-  backdrop-filter:blur(8px);
-  border-right:1px solid rgba(255,255,255,0.06);
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  transition:transform .28s ease;
-  z-index:20;
+.brand {
+  padding: 8px 0;
+  font-weight: 600;
+  font-size: 18px;
+  color: white;
 }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:16px;
+.btn.new-chat {
+  background: transparent;
+  border: 1px solid #333;
+  color: #ccc;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.logo{
-  width:46px;height:46px;
-  background:#11212c;
-  color:white;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-  font-weight:bold;
+.btn.new-chat:hover {
+  background: #333;
+  color: white;
 }
 
-.brand-title{
-  font-size:18px;
-  font-weight:600;
+.chats {
+  flex: 1;
+  overflow-y: auto;
 }
 
-.brand-sub{
-  font-size:12px;
-  color:var(--muted);
+.chat-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ccc;
+  transition: 0.2s;
 }
 
-/* New chat button */
-.btn.new-chat{
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#0b3c68;
-  color:white;
-  font-weight:500;
-  cursor:pointer;
-  transition:.2s;
+.chat-item:hover {
+  background: #252525;
+  color: white;
 }
 
-.btn.new-chat:hover{
-  background:#0e4b82;
+.profile {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: #aaa;
+  font-size: 13px;
 }
 
-/* Search */
-.search-wrap input{
-  width:100%;
-  padding:10px 14px;
-  border-radius:10px;
-  background:#000;
-  border:1px solid rgba(255,255,255,0.08);
-  color:#ccc;
-  margin:10px 0 12px 0;
+/* Main Area */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Chat list */
-.chats{
-  flex:1;
-  overflow-y:auto;
-  padding-right:4px;
+/* Chat Messages */
+.chat-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
 }
 
-.chat-item{
-  padding:12px;
-  border-radius:12px;
-  background:transparent;
-  display:flex;
-  gap:14px;
-  cursor:pointer;
-  transition:background .18s;
+.messages {
+  max-width: 800px;
+  width: 100%;
+  padding: 20px 20px 160px;
 }
 
-.chat-item:hover{
-  background:rgba(255,255,255,0.06);
+.msg-row {
+  display: flex;
+  margin: 16px 0;
+  gap: 12px;
 }
 
-.chat-item .avatar{
-  width:40px;height:40px;
-  background:#171717;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:10px;
-  font-size:14px;
-  font-weight:bold;
+.msg-row.user {
+  justify-content: flex-end;
 }
 
-.meta .title{font-size:14px;}
-.meta .sub{font-size:12px;color:var(--muted);}
-
-/* Sidebar footer */
-.sidebar-bottom{
-  margin-top:auto;
-  border-top:1px solid rgba(255,255,255,0.05);
-  padding-top:14px;
+.message {
+  padding: 11px 16px;
+  border-radius: var(--radius);
+  max-width: 75%;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
-.footer-actions{
-  display:flex;
-  gap:10px;
-  margin-bottom:14px;
+/* AI Message */
+.msg-row:not(.user) .message {
+  background: var(--bubble-ai);
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 4px;
 }
 
-.ghost{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:#aaa;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-  transition:.2s;
+/* User Message */
+.msg-row.user .message {
+  background: var(--bubble-user);
+  color: white;
+  border-radius: 12px 12px 4px 12px;
 }
 
-.ghost:hover{
-  background:rgba(255,255,255,0.08);
+/* Input Box */
+.composer {
+  position: fixed;
+  bottom: 0;
+  left: 260px;
+  right: 0;
+  padding: 16px 20px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
 }
 
-.danger{
-  color:#ff5555;
+.composer-box {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
 }
 
-/* Profile */
-.profile{
-  display:flex;
-  gap:12px;
-  align-items:center;
+#userInput {
+  flex: 1;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: white;
+  font-size: 15px;
+  resize: none;
+  max-height: 140px;
 }
 
-.profile .avatar{
-  width:44px;height:44px;
-  background:#141414;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:600;
+#userInput:focus {
+  outline: none;
+  border-color: #555;
 }
 
-/* ================================
-      MAIN
-=================================*/
-.main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  position:relative;
+.send-btn {
+  width: 40px;
+  height: 40px;
+  background: #333;
+  border: none;
+  border-radius: 10px;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Top bar */
-.topbar{
-  height:60px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 20px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  background:rgba(10,10,10,0.7);
-  backdrop-filter:blur(6px);
+.send-btn:hover {
+  background: #555;
+  color: white;
 }
 
-#menuBtn{
-  display:none;
-  font-size:26px;
-  color:white;
-}
-
-/* ================================
-      CHAT AREA
-=================================*/
-.chat-area{
-  flex:1;
-  overflow-y:auto;
-  display:flex;
-  justify-content:center;
-  padding-top:20px;
-}
-
-.messages{
-  width:100%;
-  max-width:900px;
-  padding:0 22px 130px;
-}
-
-/* Welcome */
-.welcome-card{
-  padding:26px;
-  border-radius:14px;
-  background:#111;
-  border:1px solid rgba(255,255,255,0.06);
-  animation:fadeIn .35s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(8px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-/* Messages */
-.msg-row{
-  display:flex;
-  gap:12px;
-  margin:20px 0;
-  animation:fadeIn .25s ease;
-}
-
-.message{
-  background:var(--bubble);
-  padding:15px 18px;
-  border-radius:18px;
-  max-width:74%;
-  line-height:1.45;
-}
-
-.msg-row.user .message{
-  background:#0b61d8;
-  color:white;
-  border-radius:18px 18px 6px 18px;
-}
-
-.small-meta{
-  font-size:11px;
-  opacity:0.65;
-  align-self:flex-end;
-}
-
-/* Typing */
-.typing-dots{
-  display:flex;
-  gap:4px;
-}
-
-.typing-dots span{
-  width:7px;height:7px;
-  border-radius:50%;
-  background:#999;
-  animation:blink 1s infinite;
-}
-
-/* ================================
-    COMPOSER (ChatGPT Perfect)
-=================================*/
-.composer{
-  position:fixed;
-  bottom:0;
-  left:290px;
-  right:0;
-  padding:14px 0;
-  background:linear-gradient(180deg,#0a0a0aa8,#0a0a0aff);
-  display:flex;
-  justify-content:center;
-  z-index:30;
-}
-
-.composer-box{
-  width:100%;
-  max-width:900px;
-  display:flex;
-  gap:10px;
-  padding:0 20px;
-  align-items:center;
-}
-
-/* Input bar */
-#userInput{
-  flex:1;
-  background:#161616;
-  border-radius:20px;
-  padding:14px 18px;
-  border:1px solid #2a2a2a;
-  color:white;
-  resize:none;
-  max-height:160px;
-  font-size:16px;
-  outline:none;
-}
-
-/* buttons */
-.c-btn{
-  width:44px;height:44px;
-  border-radius:12px;
-  border:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  background:#1c1c1c;
-  transition:.2s;
-  color:white;
-}
-
-.c-btn:hover{
-  background:#2c2c2c;
-}
-
-.c-btn.send{
-  background:#0066ff;
-}
-.c-btn.send:hover{
-  background:#0a7fff;
-}
-
-/* ================================
-      MOBILE MODE
-=================================*/
-@media(max-width:900px){
-
-  /* Mobile sidebar slide */
-  .sidebar{
-    position:fixed;
-    left:0;
-    top:0;
-    height:100%;
-    transform:translateX(-100%);
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: 0.3s;
   }
-
-  .sidebar.open{
-    transform:translateX(0);
-  }
-
-  #menuBtn{
-    display:block;
-    cursor:pointer;
-  }
-
-  .composer{
-    left:0;
-  }
-
-  .messages{
-    padding:0 14px 120px;
-  }
-
-  .message{
-    max-width:85%;
-  }
+  .sidebar.open { transform: translateX(0); }
+  .composer { left: 0; }
+  #menuBtn { display: block; padding: 0 20px; font-size: 24px; cursor: pointer; color: white; }
 }
