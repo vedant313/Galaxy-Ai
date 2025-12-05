@@ -1,8 +1,27 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from backend.chat import generate_reply   # ✅ Correct async function
+from backend.chat import generate_reply   # your AI text reply function
+from gtts import gTTS
+import httpx
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+# ----------------------------
+# API KEYS
+# ----------------------------
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+if not GROQ_API_KEY:
+    raise ValueError("❌ Missing GROQ_API_KEY in .env file")
+
+WHISPER_URL = "https://api.groq.com/openai/v1/audio/transcriptions"
+
+# ----------------------------
+# FASTAPI APP
+# ----------------------------
 app = FastAPI(
     title="GalaxyX AI Backend",
     description="Official backend for Galaxy Tech Corporation AI",
@@ -14,7 +33,7 @@ app = FastAPI(
 # ----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,13 +57,52 @@ async def home():
     }
 
 # ----------------------------
-# CHAT ROUTE (MAIN)
+# MAIN CHAT ROUTE
 # ----------------------------
 @app.post("/chat")
 async def chat(req: ChatRequest):
     user_msg = req.text
 
-    # ⛔ generate_reply ASYNC hai → await zaroori
     reply = await generate_reply(user_msg)
 
     return {"reply": reply}
+
+# ============================================================
+# 🎤 SPEECH → TEXT (Groq Whisper)
+# ============================================================
+@app.post("/stt")
+async def speech_to_text(audio: UploadFile = File(...)):
+    try:
+        file_bytes = await audio.read()
+
+        async with httpx.AsyncClient(timeout=12) as client:
+            r = await client.post(
+                WHISPER_URL,
+                headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
+                files={"file": (audio.filename, file_bytes, audio.content_type)},
+                data={"model": "whisper-large-v3"}
+            )
+
+        text = r.json().get("text", "")
+
+        return {"text": text}
+
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# 🔊 TEXT → SPEECH (gTTS Free)
+# ============================================================
+@app.post("/tts")
+async def text_to_speech(req: ChatRequest):
+    try:
+        text = req.text
+        audio_file = "reply_audio.mp3"
+
+        tts = gTTS(text=text, lang="en")
+        tts.save(audio_file)
+
+        return FileResponse(audio_file, media_type="audio/mpeg")
+
+    except Exception as e:
+        return {"error": str(e)}

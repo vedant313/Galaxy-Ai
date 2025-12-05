@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>GalaxyX AI — Premium</title>
 
-  <style>
+<style>
 /* ============================================================
-   GALAXYX AI — FINAL UPDATED (Compact Composer + SVG Icons)
+   GALAXYX AI — FINAL PREMIUM UI (ChatGPT Style 2025)
 ============================================================ */
-
 :root{
   --bg:#060607;
   --panel:#0d0d0e;
@@ -23,378 +22,228 @@
   --font:"Inter",system-ui;
 }
 
-/* RESET */
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);overflow:hidden}
 
-/* APP */
 .app{display:flex;width:100vw;height:100vh}
 
-/* SIDEBAR */
 .sidebar{
   width:280px;
-  background:linear-gradient(180deg,rgba(3,3,4,0.97),rgba(10,10,11,1));
-  backdrop-filter:blur(6px);
+  background:linear-gradient(180deg,#030304ee,#0a0a0bff);
   border-right:1px solid rgba(255,255,255,0.05);
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  transition:.25s ease;
-  z-index:10003;
+  padding:18px;display:flex;flex-direction:column;
+  transition:.25s ease;z-index:10003;
 }
 .brand{display:flex;gap:12px;align-items:center}
-.logo{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),#0064b8);border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;box-shadow:0 6px 18px var(--accent-glow)}
+.logo{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),#0064b8);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:20px;box-shadow:0 6px 18px var(--accent-glow)}
 .brand-title{font-size:18px;font-weight:600}
 .brand-sub{font-size:12px;color:var(--muted)}
 
-.btn.new-chat{margin-top:12px;padding:12px;border-radius:12px;font-weight:600;background:rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
-.btn.new-chat:hover{background:rgba(255,255,255,0.08)}
+.btn.new-chat{
+  margin-top:12px;padding:12px;border-radius:12px;font-weight:600;
+  background:#000;border:1px solid rgba(255,255,255,0.06);cursor:pointer;
+}
 
-.search-wrap input{width:100%;margin-top:12px;padding:10px 14px;border-radius:10px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.07);color:var(--text)}
+.search-wrap input{
+  width:100%;margin-top:12px;padding:10px 14px;border-radius:10px;
+  background:#0b0b0b;border:1px solid rgba(255,255,255,0.07);color:var(--text);
+}
 
 .chats{flex:1;overflow-y:auto;margin-top:10px;padding-right:4px}
 .chat-item{padding:12px;display:flex;gap:12px;border-radius:12px;cursor:pointer}
-.chat-item:hover{background:rgba(255,255,255,0.06)}
-.chat-item.active{background:rgba(14,165,255,0.15);box-shadow:inset 0 0 4px rgba(14,165,255,0.25)}
-.chat-item .avatar{width:40px;height:40px;background:#0f0f0f;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600}
+
+.avatar{
+  width:40px;height:40px;background:#0f0f0f;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;
+}
+
 .meta .title{font-size:14px}
 .meta .sub{font-size:12px;color:var(--muted)}
 
 .sidebar-bottom{padding-top:14px;border-top:1px solid rgba(255,255,255,0.05)}
 .footer-actions{display:flex;gap:10px}
-.ghost{padding:8px 14px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);cursor:pointer}
-.ghost:hover{background:rgba(255,255,255,0.08)}
-.danger{color:#ff7070;border-color:#ff707055}
 
-/* MAIN & TOPBAR */
 .main{flex:1;display:flex;flex-direction:column}
-.topbar{height:64px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;padding:0 22px}
-.hamburger-btn{background:transparent;border:none;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:6px}
-.hamburger-btn .line{height:3px;border-radius:3px;background:var(--text)}
-.big{width:24px}.small{width:16px}
 
-/* SHARE button (SVG inside) */
-.share-btn{background:transparent;border:none;padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
-.share-btn:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+.topbar{
+  height:64px;border-bottom:1px solid rgba(255,255,255,0.05);
+  display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+}
 
-/* CHAT AREA */
 .chat-area{flex:1;overflow-y:auto;padding-top:20px;display:flex;justify-content:center}
 .messages{width:100%;max-width:900px;padding:0 22px 140px}
-.welcome-card{padding:30px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:14px;text-align:center}
 
-/* MESSAGES */
+.welcome-card{
+  padding:30px;background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:14px;text-align:center;
+}
+
 .msg-row{margin:16px 0;display:flex;gap:10px}
 .msg-row.user{justify-content:flex-end}
-.message{padding:12px 16px;max-width:75%;font-size:15px;background:var(--bubble);border-radius:14px;line-height:1.45;border:1px solid rgba(255,255,255,0.03)}
-.msg-row.user .message{background:var(--bubble-user);color:white;border-bottom-right-radius:6px;box-shadow:0 4px 12px rgba(0,80,200,0.2)}
+
+.message{
+  padding:12px 16px;max-width:75%;
+  background:var(--bubble);border-radius:14px;font-size:15px;
+}
+
+.msg-row.user .message{
+  background:var(--bubble-user);color:white;border-bottom-right-radius:6px;
+}
+
 .small-meta{font-size:11px;opacity:0.7;margin-left:6px}
 
-/* COMPOSER — COMPACT CHATGPT STYLE */
 .composer{
-  position:fixed;
-  left:280px;
-  right:0;
-  bottom:calc(env(safe-area-inset-bottom) + 8px);
-  background:rgba(0,0,0,0.92);
-  border-top:1px solid rgba(255,255,255,0.05);
-  padding:10px 20px;
-  z-index:10001;
-  display:flex;
-  justify-content:center;
+  position:fixed;left:280px;right:0;bottom:10px;
+  background:#000; padding:10px 20px;border-top:1px solid rgba(255,255,255,0.05);
 }
-.composer-box{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;width:100%}
-#userInput{flex:1;padding:8px 12px;border-radius:14px;background:#0e0e0e;border:1px solid #1a1a1a;color:white;resize:none;font-size:14px;line-height:1.35;min-height:36px;max-height:140px;overflow:auto}
+.composer-box{
+  max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;
+}
 
-/* Buttons */
-.c-btn{width:36px;height:36px;border-radius:10px;background:#000;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 36px}
-.c-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--text)}
-.c-btn.send{width:38px;height:38px;border-radius:50%;background:var(--accent);box-shadow:0 6px 16px rgba(14,165,255,0.35);color:white}
-.c-btn.send svg{stroke:white}
+#userInput{
+  flex:1;padding:8px 12px;border-radius:14px;background:#0e0e0e;
+  border:1px solid #1a1a1a;color:white;resize:none;font-size:14px;
+  min-height:36px;max-height:140px;
+}
 
-/* MOBILE */
+.c-btn{
+  width:36px;height:36px;border-radius:10px;background:#000;border:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.c-btn.send{
+  width:42px;height:42px;border-radius:50%;background:var(--accent);
+  box-shadow:0 6px 16px var(--accent-glow)
+}
+
 @media(max-width:900px){
-  .sidebar{position:fixed;left:0;height:100%;width:78%;max-width:280px;transform:translateX(-100%);z-index:10003}
+  .sidebar{position:fixed;left:0;height:100%;width:78%;transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
-  body.mobile-open::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10002}
-  .composer{left:0;padding:10px 16px}
-  .messages{padding:0 16px 110px}
-  .message{max-width:85%}
+  .composer{left:0}
+  .messages{padding:0 16px 120px}
 }
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.05);border-radius:10px}
-
-  </style>
+</style>
 </head>
 
 <body>
-  <div class="app">
+<div class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="logo">X</div>
-        <div>
-          <div class="brand-title">GalaxyX AI</div>
-          <div class="brand-sub">Premium Edition</div>
-        </div>
-      </div>
-
-      <button id="newChatBtn" class="btn new-chat">+ New chat</button>
-
-      <div class="search-wrap">
-        <input id="searchInput" placeholder="Search chats" autocomplete="off" />
-      </div>
-
-      <nav id="chatsList" class="chats"></nav>
-
-      <div class="sidebar-bottom">
-        <div class="footer-actions">
-          <button id="exportBtn" class="ghost">Export</button>
-          <button id="clearBtn" class="ghost danger">Clear</button>
-        </div>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-
-      <header class="topbar">
-        <div style="display:flex;align-items:center;gap:12px">
-          <button id="menuBtn" class="hamburger-btn" aria-label="menu">
-            <span class="line big"></span>
-            <span class="line small"></span>
-          </button>
-          <div style="font-size:18px;font-weight:600">GalaxyX AI</div>
-        </div>
-
-        <!-- Share icon (SVG) -->
-        <button id="shareBtn" class="share-btn" aria-label="share">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-            <path d="M4 12H20M14 6L20 12L14 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </header>
-
-      <section class="chat-area">
-        <div id="messages" class="messages">
-          <div class="welcome-card">
-            <h2>Welcome to GalaxyX AI 🚀</h2>
-            <p style="color:var(--muted)">Type your message below.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- COMPOSER -->
-      <footer class="composer">
-        <div class="composer-box">
-          <button id="attachBtn" class="c-btn" aria-label="attach">
-            <!-- attach (plus) SVG -->
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-
-          <textarea id="userInput" placeholder="Ask anything..." rows="1"></textarea>
-
-          <button id="micBtn" class="c-btn" aria-label="mic">
-            <!-- mic SVG -->
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" stroke="currentColor"/>
-              <path d="M19 11a7 7 0 0 1-14 0" stroke="currentColor"/>
-              <path d="M12 18v3" stroke="currentColor"/>
-              <path d="M8 21h8" stroke="currentColor"/>
-            </svg>
-          </button>
-
-          <button id="sendBtn" class="c-btn send" aria-label="send">
-            <!-- send SVG -->
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M22 12L2 3v7l15 2-15 2v7z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </footer>
-
-    </main>
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="logo">X</div>
+    <div>
+      <div class="brand-title">GalaxyX AI</div>
+      <div class="brand-sub">Premium Edition</div>
+    </div>
   </div>
 
-  <script>
-/* ============================================================
-   JS — mostly same as original, adapted to new composer markup
-============================================================ */
+  <button id="newChatBtn" class="btn new-chat">+ New chat</button>
 
-const API_URL = "https://galaxy-ai-3.onrender.com/chat";
+  <div class="search-wrap">
+    <input id="searchInput" placeholder="Search chats" />
+  </div>
 
-const chatsList = document.getElementById("chatsList");
-const newChatBtn = document.getElementById("newChatBtn");
-const searchInput = document.getElementById("searchInput");
-const messagesEl = document.getElementById("messages");
-const userInput = document.getElementById("userInput");
-const sendBtn = document.getElementById("sendBtn");
-const clearBtn = document.getElementById("clearBtn");
-const exportBtn = document.getElementById("exportBtn");
-const attachBtn = document.getElementById("attachBtn");
+  <nav id="chatsList" class="chats"></nav>
+
+  <div class="sidebar-bottom">
+    <div class="footer-actions">
+      <button id="exportBtn" class="ghost">Export</button>
+      <button id="clearBtn" class="ghost danger">Clear</button>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button id="menuBtn" class="hamburger-btn">
+        <span class="line big"></span><span class="line small"></span>
+      </button>
+      <div style="font-size:18px;font-weight:600">GalaxyX AI</div>
+    </div>
+
+    <button id="shareBtn" class="share-btn">🔗</button>
+  </header>
+
+  <section class="chat-area">
+    <div id="messages" class="messages">
+      <div class="welcome-card">
+        <h2>Welcome to GalaxyX AI 🚀</h2>
+        <p style="color:var(--muted)">Ask anything or use voice input.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="composer">
+    <div class="composer-box">
+      <button id="attachBtn" class="c-btn">📎</button>
+      <textarea id="userInput" placeholder="Ask anything..." rows="1"></textarea>
+      <button id="micBtn" class="c-btn">🎤</button>
+      <button id="sendBtn" class="c-btn send">➤</button>
+    </div>
+  </footer>
+
+</main>
+</div>
+
+<script>
+/* BACKEND URLs */
+const CHAT_URL = "https://galaxy-ai-3.onrender.com/chat";
+
 const micBtn = document.getElementById("micBtn");
-const shareBtn = document.getElementById("shareBtn");
-const menuBtn = document.getElementById("menuBtn");
-const sidebar = document.getElementById("sidebar");
+const sendBtn = document.getElementById("sendBtn");
+const userInput = document.getElementById("userInput");
+const messagesEl = document.getElementById("messages");
 
-let chats = JSON.parse(localStorage.getItem("gx_chats") || "[]");
-let activeChatId = null;
+/* ---------- SEND TEXT MESSAGE ---------- */
+async function sendTextMessage() {
+  const text = userInput.value.trim();
+  if(!text) return;
+  userInput.value = "";
 
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-const nowTime = () => new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  appendMessage(text, "user");
 
-/* Toggle sidebar (mobile) */
-menuBtn.onclick = () => {
-  sidebar.classList.toggle("open");
-  document.body.classList.toggle("mobile-open", sidebar.classList.contains("open"));
-};
+  const res = await fetch(CHAT_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ text })
+  });
 
-/* Click outside to close sidebar on mobile */
-document.addEventListener("click", (e) => {
-  if (window.innerWidth <= 900 && !sidebar.contains(e.target) && e.target !== menuBtn) {
-    sidebar.classList.remove("open");
-    document.body.classList.remove("mobile-open");
-  }
-});
-
-/* Save & find */
-function save(){ localStorage.setItem("gx_chats", JSON.stringify(chats)); }
-function findChat(id){ return chats.find(c => c.id === id); }
-function escapeHTML(str){ return String(str).replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-
-/* Render chat list */
-function renderChatList(filter=""){
-  chatsList.innerHTML="";
-  chats.slice().reverse().filter(c => (c.title||"").toLowerCase().includes(filter.toLowerCase()))
-    .forEach(chat => {
-      const div = document.createElement("div");
-      div.className = "chat-item";
-      if (activeChatId === chat.id) div.classList.add("active");
-      div.innerHTML = `
-        <div class="avatar">${(chat.title||"C").slice(0,2).toUpperCase()}</div>
-        <div class="meta">
-          <div class="title">${chat.title || "New chat"}</div>
-          <div class="sub">${chat.last || "No messages yet"}</div>
-        </div>
-      `;
-      div.onclick = () => openChat(chat.id);
-      chatsList.appendChild(div);
-    });
+  const data = await res.json();
+  appendMessage(data.reply, "ai");
 }
 
-/* Open chat */
-function openChat(id){
-  activeChatId = id;
-  const chat = findChat(id);
-  messagesEl.innerHTML = "";
-  if (!chat || !chat.messages.length){
-    messagesEl.innerHTML = `<div class="welcome-card"><h2>Welcome to GalaxyX AI 🚀</h2></div>`;
-  } else {
-    chat.messages.forEach(m => appendMessage(m.text, m.role, m.time));
-  }
-  renderChatList();
-  scrollToBottom();
-}
-
-/* Append message */
-function appendMessage(text, role="ai", time=nowTime()){
+/* UI message */
+function appendMessage(text, role="ai") {
   const div = document.createElement("div");
-  div.className = "msg-row " + (role === "user" ? "user" : "ai");
+  div.className = "msg-row " + (role==="user" ? "user" : "ai");
   div.innerHTML = `
-    <div class="message">${escapeHTML(text)}</div>
-    <div class="small-meta">${time}</div>
+    <div class="message">${text}</div>
+    <div class="small-meta">${new Date().toLocaleTimeString()}</div>
   `;
   messagesEl.appendChild(div);
-  scrollToBottom();
+  document.querySelector(".chat-area").scrollTop = 999999;
 }
 
-/* Scroll */
-function scrollToBottom(){
-  setTimeout(() => {
-    document.querySelector(".chat-area").scrollTop = document.querySelector(".chat-area").scrollHeight;
-  }, 50);
-}
+sendBtn.onclick = sendTextMessage;
 
-/* New chat */
-function newChat(){
-  const id = uid();
-  chats.push({ id, title: "New chat", last: "", messages: [] });
-  save(); renderChatList(); openChat(id);
-}
-
-/* Auto expand textarea */
-userInput.oninput = () => {
-  userInput.style.height = "auto";
-  userInput.style.height = Math.min(160, userInput.scrollHeight) + "px";
-};
-
-/* Send message */
-async function sendMessage(){
-  const text = userInput.value.trim();
-  if (!text) return;
-  if (!activeChatId) newChat();
-  const chat = findChat(activeChatId);
-
-  const t = nowTime();
-  chat.messages.push({ role: "user", text, time: t });
-  chat.last = text.slice(0,40);
-  appendMessage(text, "user", t);
-
-  userInput.value = "";
-  userInput.style.height = "auto";
-  save();
-
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    });
-    const json = await res.json();
-    const reply = json.reply || "No response";
-    const rt = nowTime();
-    chat.messages.push({ role: "ai", text: reply, time: rt });
-    chat.last = reply.slice(0,50);
-    appendMessage(reply, "ai", rt);
-    save(); renderChatList();
-  } catch (err){
-    appendMessage("⚠ Error: " + err.message, "ai", nowTime());
-  }
-}
-
-/* EVENTS */
-sendBtn.onclick = sendMessage;
-newChatBtn.onclick = newChat;
-clearBtn.onclick = () => { chats = []; save(); newChat(); };
-exportBtn.onclick = () => {
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(chats, null, 2)]));
-  a.download = "chats.json";
-  a.click();
-};
-searchInput.oninput = (e) => renderChatList(e.target.value);
-
-/* Optional: mic button placeholder (you can implement WebSpeech later) */
+/* ---------- MIC → OPEN JARVIS PAGE ---------- */
 micBtn.onclick = () => {
-  // placeholder action (visual feedback)
-  micBtn.animate([{transform:'scale(1)'},{transform:'scale(0.96)'},{transform:'scale(1)'}],{duration:220});
+  micBtn.animate(
+    [
+      { transform: "scale(1)" },
+      { transform: "scale(0.92)" },
+      { transform: "scale(1)" }
+    ],
+    { duration: 220 }
+  );
+
+  window.location.href = "voice.html"; // OPEN JARVIS MODE
 };
+</script>
 
-/* Attach placeholder */
-attachBtn.onclick = () => {
-  attachBtn.animate([{transform:'rotate(0)'},{transform:'rotate(10deg)'},{transform:'rotate(0)'}],{duration:220});
-};
-
-/* INIT */
-(function(){
-  if (!chats.length) newChat();
-  else { renderChatList(); openChat(chats[chats.length - 1].id); }
-})();
-
-  </script>
 </body>
 </html>

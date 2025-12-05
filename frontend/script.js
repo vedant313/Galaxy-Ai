@@ -289,21 +289,19 @@ function clearAll() {
 }
 
 // ------------------------------------------------------------
-// 🔥 REAL SHARE LINK (ChatGPT Style)
+// SHARE
 // ------------------------------------------------------------
-// We encode entire chat into base64 so user can open URL and restore chat.
 function shareConversation() {
   const chat = findChat(activeChatId);
   if (!chat) return alert("Open a chat first!");
 
-  const encoded = btoa(JSON.stringify(chat)); // Base64
+  const encoded = btoa(JSON.stringify(chat));
   const url = `${location.origin}?share=${encoded}`;
 
   navigator.clipboard.writeText(url);
   alert("Sharable link copied!");
 }
 
-// Auto-load shared chat if ?share= is present
 (function loadSharedChat() {
   const params = new URLSearchParams(location.search);
   const data = params.get("share");
@@ -322,23 +320,34 @@ function shareConversation() {
 })();
 
 // ------------------------------------------------------------
-// ATTACH BUTTON ANIMATION
+// ATTACH BUTTON
 // ------------------------------------------------------------
 attachBtn.onclick = () => {
   attachBtn.animate(
-    [{ transform: "rotate(0deg)" }, { transform: "rotate(20deg)" }, { transform: "rotate(0deg)" }],
+    [
+      { transform: "rotate(0deg)" },
+      { transform: "rotate(20deg)" },
+      { transform: "rotate(0deg)" },
+    ],
     { duration: 220 }
   );
 };
 
 // ------------------------------------------------------------
-// MIC BUTTON (placeholder animation)
+// ⭐ MIC BUTTON — OPEN JARVIS VOICE MODE
 // ------------------------------------------------------------
 micBtn.onclick = () => {
   micBtn.animate(
-    [{ transform: "scale(1)" }, { transform: "scale(0.92)" }, { transform: "scale(1)" }],
-    { duration: 200 }
+    [
+      { transform: "scale(1)" },
+      { transform: "scale(0.92)" },
+      { transform: "scale(1)" }
+    ],
+    { duration: 220 }
   );
+
+  // Open Jarvis Mode Page
+  window.location.href = "voice.html"; // <-- IMPORTANT
 };
 
 // ------------------------------------------------------------
@@ -352,7 +361,6 @@ exportBtn.onclick = exportChats;
 shareBtn.onclick = shareConversation;
 
 userInput.oninput = adjustTextarea;
-
 userInput.onkeydown = (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
