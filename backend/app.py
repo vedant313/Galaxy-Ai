@@ -1,9 +1,8 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from backend.chat import generate_reply   # your AI text reply function
-from gtts import gTTS
 import httpx
 import os
 from dotenv import load_dotenv
@@ -18,6 +17,7 @@ if not GROQ_API_KEY:
     raise ValueError("❌ Missing GROQ_API_KEY in .env file")
 
 WHISPER_URL = "https://api.groq.com/openai/v1/audio/transcriptions"
+TTS_URL = "https://api.groq.com/openai/v1/audio/speech"
 
 # ----------------------------
 # FASTAPI APP
@@ -44,6 +44,7 @@ app.add_middleware(
 # ----------------------------
 class ChatRequest(BaseModel):
     text: str
+    voice: str | None = "jarvis"   # ⭐ NEW: Voice selection support
 
 # ----------------------------
 # HOME ROUTE
@@ -62,9 +63,7 @@ async def home():
 @app.post("/chat")
 async def chat(req: ChatRequest):
     user_msg = req.text
-
     reply = await generate_reply(user_msg)
-
     return {"reply": reply}
 
 # ============================================================
@@ -84,25 +83,42 @@ async def speech_to_text(audio: UploadFile = File(...)):
             )
 
         text = r.json().get("text", "")
-
         return {"text": text}
 
     except Exception as e:
         return {"error": str(e)}
 
 # ============================================================
-# 🔊 TEXT → SPEECH (gTTS Free)
+# 🔊 NEW ULTRA-NATURAL TTS (Groq AI Voices)
 # ============================================================
+
+VOICE_MAP = {
+    "jarvis": "eleven_multilingual_v2",
+    "friday": "eleven_english_v1",
+    "neutral": "eleven_turbo_v1"
+}
+
 @app.post("/tts")
 async def text_to_speech(req: ChatRequest):
+    text = req.text
+    voice = req.voice or "jarvis"
+    voice_model = VOICE_MAP.get(voice, VOICE_MAP["jarvis"])
+
     try:
-        text = req.text
-        audio_file = "reply_audio.mp3"
+        async with httpx.AsyncClient(timeout=20) as client:
+            res = await client.post(
+                TTS_URL,
+                headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
+                json={
+                    "model": voice_model,
+                    "input": text
+                }
+            )
 
-        tts = gTTS(text=text, lang="en")
-        tts.save(audio_file)
-
-        return FileResponse(audio_file, media_type="audio/mpeg")
+        return StreamingResponse(
+            res.aiter_bytes(),
+            media_type="audio/mpeg"
+        )
 
     except Exception as e:
         return {"error": str(e)}

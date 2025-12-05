@@ -38,7 +38,7 @@ const nowTime = () =>
   });
 
 const escapeHTML = (t) =>
-  t.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  String(t).replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function save() {
   localStorage.setItem("galaxy_chats_v3", JSON.stringify(chats));
@@ -184,7 +184,7 @@ function removeTyping() {
 function scrollToBottom(immediate = false) {
   setTimeout(() => {
     const area = document.querySelector(".chat-area");
-    area.scrollTop = area.scrollHeight;
+    if (area) area.scrollTop = area.scrollHeight;
   }, immediate ? 10 : 40);
 }
 
@@ -260,7 +260,7 @@ async function sendMessage() {
     renderChatList(searchInput.value);
   } catch (err) {
     removeTyping();
-    appendMessage("⚠ Server error: " + err.message, "ai", nowTime());
+    appendMessage("⚠ Server error: " + (err.message || err), "ai", nowTime());
   }
 }
 
@@ -289,19 +289,20 @@ function clearAll() {
 }
 
 // ------------------------------------------------------------
-// SHARE
+// 🔥 REAL SHARE LINK (ChatGPT Style)
 // ------------------------------------------------------------
 function shareConversation() {
   const chat = findChat(activeChatId);
   if (!chat) return alert("Open a chat first!");
 
-  const encoded = btoa(JSON.stringify(chat));
+  const encoded = btoa(JSON.stringify(chat)); // Base64
   const url = `${location.origin}?share=${encoded}`;
 
   navigator.clipboard.writeText(url);
   alert("Sharable link copied!");
 }
 
+// Auto-load shared chat if ?share= is present
 (function loadSharedChat() {
   const params = new URLSearchParams(location.search);
   const data = params.get("share");
@@ -320,34 +321,56 @@ function shareConversation() {
 })();
 
 // ------------------------------------------------------------
-// ATTACH BUTTON
+// ATTACH BUTTON ANIMATION
 // ------------------------------------------------------------
 attachBtn.onclick = () => {
   attachBtn.animate(
-    [
-      { transform: "rotate(0deg)" },
-      { transform: "rotate(20deg)" },
-      { transform: "rotate(0deg)" },
-    ],
+    [{ transform: "rotate(0deg)" }, { transform: "rotate(20deg)" }, { transform: "rotate(0deg)" }],
     { duration: 220 }
   );
 };
 
 // ------------------------------------------------------------
-// ⭐ MIC BUTTON — OPEN JARVIS VOICE MODE
+// ⭐ MIC BUTTON → OPEN JARVIS VOICE MODE (FINAL STABLE SYSTEM)
 // ------------------------------------------------------------
 micBtn.onclick = () => {
   micBtn.animate(
     [
       { transform: "scale(1)" },
-      { transform: "scale(0.92)" },
-      { transform: "scale(1)" }
+      { transform: "scale(0.9)" },
+      { transform: "scale(1)" },
     ],
-    { duration: 220 }
+    { duration: 200 }
   );
 
-  // Open Jarvis Mode Page
-  window.location.href = "voice.html"; // <-- IMPORTANT
+  // FULL AUTO PATH DETECTION (WORKS ON LOCALHOST + VERCEL + LIVE SERVER)
+  const base = window.location.pathname.replace(/\/[^\/]*$/, "");
+
+  const possible = [
+    base + "/voice.html",
+    base + "voice.html",
+    "/voice.html",
+    "./voice.html",
+    "voice.html",
+    "/frontend/voice.html",
+    base + "/frontend/voice.html"
+  ];
+
+  (async () => {
+    for (let path of possible) {
+      try {
+        const res = await fetch(path, { method: "GET" });
+        if (res && res.ok) {
+          window.location.href = path;
+          return;
+        }
+      } catch (e) {
+        // ignore and try next
+      }
+    }
+
+    alert("❌ voice.html not found!\n➡ Make sure voice.html is located inside your frontend folder (frontend/voice.html).");
+  })();
 };
 
 // ------------------------------------------------------------
@@ -361,6 +384,7 @@ exportBtn.onclick = exportChats;
 shareBtn.onclick = shareConversation;
 
 userInput.oninput = adjustTextarea;
+
 userInput.onkeydown = (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();

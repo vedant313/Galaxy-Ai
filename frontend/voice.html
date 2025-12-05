@@ -3,259 +3,299 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>GalaxyX — Jarvis Voice Mode</title>
+<title>GalaxyX — Jarvis Voice Mode (Dual)</title>
+
+<!--
+  Dual-mode Jarvis Voice UI
+  - Auto-detects mobile vs desktop and adapts layout
+  - Mobile-first responsive HUD & larger controls
+  - MediaRecorder mobile-safe mime autodetect
+  - Uses endpoints: /stt, /chat, /tts
+  - Frontend sends { text, voice } to /tts (voice = "jarvis" | "friday" | "neutral")
+-->
 
 <style>
   :root{
-    --bg:#000811;
-    --neon:#00e0ff;
+    --bg:#000814;
+    --neon-1:#00e0ff;
     --neon-2:#4cffb1;
     --muted:#8b98a8;
     --glass:rgba(255,255,255,0.03);
-    --accent-glow: 0 10px 40px rgba(0,224,255,0.08);
-    --glass-2: rgba(255,255,255,0.02);
-    font-family: Inter, system-ui, sans-serif;
-  }
-  html,body{
-    height:100%;
-    margin:0;
-    background:linear-gradient(180deg,#000814,#00020a 80%);
-    color:#dff7ff;
-    overflow:hidden;
+    --glass-2:rgba(255,255,255,0.02);
+    --accent-glow: 0 14px 50px rgba(0,224,255,0.06);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
   }
 
-  .jarvis{
-    width:100vw;height:100vh;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:space-between;
-    padding:36px;
-    background-image:
-      radial-gradient(circle at 10% 10%, rgba(0,224,255,0.04), transparent 20%),
-      radial-gradient(circle at 90% 90%, rgba(76,255,177,0.03), transparent 20%);
-  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#000814,#00020a 85%);color:#e6fbff;overflow:hidden}
+  .wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
 
-  header{
+/* ---------- Shared HUD ---------- */
+  .jarvis {
     width:100%;
-    display:flex;justify-content:space-between;align-items:center;
+    height:100%;
+    max-width:1400px;
+    display:flex;
+    gap:20px;
+    align-items:stretch;
+    justify-content:center;
+    margin:auto;
   }
 
-  .brand{display:flex;gap:12px;align-items:center}
-  .logo{
-    width:56px;height:56px;border-radius:12px;
-    background:linear-gradient(135deg,var(--neon),#0064b8);
-    display:flex;align-items:center;justify-content:center;
-    font-size:22px;font-weight:800;
-    box-shadow:var(--accent-glow);
-  }
-  .title{font-size:20px;font-weight:600}
-  .sub{font-size:13px;color:var(--muted)}
-
-  .center{
-    display:flex;flex-direction:column;align-items:center;gap:18px;
+/* ---------- LEFT (HUD) ---------- */
+  .hud-panel {
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
 
-  /* RESPONSIVE HUD */
-  .hud{
-    width:min(80vw,380px);
-    height:min(80vw,380px);
-    border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    background:conic-gradient(rgba(0,224,255,0.03), transparent 40%);
-    border:1px solid rgba(0,224,255,0.06);
-    box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  .hud {
     position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:conic-gradient(rgba(0,224,255,0.03), transparent 40%);
+    border:1px solid rgba(0,224,255,0.05);
+    box-shadow:var(--accent-glow);
+    transition:all .22s ease;
   }
+
+  /* desktop size */
+  .hud.desktop { width:520px; height:520px; }
+  .core.desktop { width:260px; height:260px; }
+
+  /* mobile size */
+  .hud.mobile { width:84vw; height:84vw; max-width:360px; max-height:360px; }
+  .core.mobile { width:44vw; height:44vw; max-width:170px; max-height:170px; }
 
   .core{
-    width:min(48vw,200px);
-    height:min(48vw,200px);
     border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    flex-direction:column;
-    background:linear-gradient(180deg,rgba(0,224,255,0.05),rgba(76,255,177,0.03));
+    flex-direction:column;padding:18px;text-align:center;
+    backdrop-filter: blur(6px);
     border:1px solid rgba(0,224,255,0.12);
-    backdrop-filter:blur(6px);
-    text-align:center;
-    padding:18px;
-    color:#e8ffff;
+    background:linear-gradient(180deg,rgba(0,224,255,0.04),rgba(76,255,177,0.02));
+    color:#dff9ff;
   }
 
-  .status{font-size:18px;margin-bottom:6px}
-  .phase{font-size:12px;color:var(--muted)}
+  .status { font-size:20px; font-weight:700; margin-bottom:6px; letter-spacing:.2px }
+  .phase  { font-size:13px; color:var(--muted) }
 
-  canvas#wave{
-    position:absolute;inset:0;width:100%;height:100%;
-    pointer-events:none;
+/* waveform canvas overlaps hud */
+  canvas#wave { position:absolute; inset:0; width:100%; height:100%; pointer-events:none }
+
+/* ---------- RIGHT (Controls + Transcript) ---------- */
+  .side {
+    width:360px;
+    max-width:36vw;
+    min-width:260px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    align-items:stretch;
   }
 
-  /* Responsive caption */
-  .caption{
-    width:90vw;
-    max-width:900px;
-    padding:14px;
-    border-radius:12px;
-    background:var(--glass-2);
-    border:1px solid rgba(0,224,255,0.04);
-    text-align:center;
-    font-size:15px;
-    color:#bfeff7;
+  .brand-row {
+    display:flex;align-items:center;gap:12px;
+  }
+  .logo { width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--neon-1),#0064b8);display:flex;align-items:center;justify-content:center;font-weight:800 }
+  .title { font-size:18px;font-weight:700 }
+  .subtitle { font-size:12px;color:var(--muted) }
+
+  .caption {
+    padding:12px;border-radius:10px;background:var(--glass-2);border:1px solid rgba(255,255,255,0.03);
+    color:#c9f6ff;font-size:14px;text-align:center;min-height:46px;
   }
 
-  /* controls */
-  .controls{display:flex;gap:14px;margin-top:10px}
-  .btn{
-    padding:12px 18px;border-radius:12px;
-    border:1px solid rgba(255,255,255,0.06);
-    background:transparent;color:#dff7ff;
-    cursor:pointer;font-weight:600;
+  .controls { display:flex;gap:10px;flex-wrap:wrap }
+  .btn {
+    flex:0 0 auto;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+    background:transparent;color:inherit;font-weight:700;cursor:pointer;
   }
-  .btn.neon{
-    background:linear-gradient(90deg,var(--neon),var(--neon-2));
-    border:none;color:#001615;
-  }
-  .btn.warn{background:#ff4d4d;border:none;color:white}
+  .btn.big { padding:12px 18px;font-size:15px }
+  .btn.neon { background:linear-gradient(90deg,var(--neon-1),var(--neon-2)); color:#001615;border:none; box-shadow:0 8px 30px rgba(0,224,255,0.06) }
+  .voice-select { width:100%;padding:8px 10px;border-radius:8px;background:#02121a;border:1px solid rgba(255,255,255,0.04);color:#dff7ff }
 
-  .transcript{
-    position:fixed;right:20px;top:120px;
-    width:300px;max-height:65vh;
-    padding:12px;border-radius:12px;
-    overflow:auto;
-    font-size:13px;
-    background:rgba(255,255,255,0.02);
-    border:1px solid rgba(255,255,255,0.03);
-  }
+  .transcript { background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:10px;border-radius:10px; max-height:40vh; overflow:auto;border:1px solid rgba(255,255,255,0.03) }
+  .line { padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03); font-size:13px }
+  .line.you { color:#bfeaff }
+  .line.ai  { color:#bff2c9 }
 
-  .line{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.05)}
-  .you{color:#b8e7ff}
-  .ai{color:#baffc7}
-
-  .back{
-    position:fixed;left:18px;top:20px;
-    padding:10px 12px;border-radius:10px;
-    border:1px solid rgba(255,255,255,0.04);
-    background:transparent;color:#dff7ff;
-    cursor:pointer;
+/* ---------- Responsive behavior ---------- */
+  @media (max-width: 980px) {
+    .jarvis { flex-direction:column; padding:14px; align-items:center }
+    .hud-panel { order:1 }
+    .side { order:2; width:100%; max-width:100% }
+    .side { min-width:unset; }
+    .hud.desktop { display:none }
+    .core.desktop { display:none }
   }
 
-  @media(max-width:900px){
-    .transcript{display:none}
+  @media (min-width: 981px) {
+    .hud.mobile { display:none }
+    .core.mobile { display:none }
   }
+
+  /* small niceties */
+  .muted { color:var(--muted); font-size:13px }
 </style>
 </head>
-
 <body>
-<div class="jarvis">
-  
-  <header>
-    <div class="brand">
-      <div class="logo">X</div>
-      <div>
-        <div class="title">GalaxyX — JARVIS Mode</div>
-        <div class="sub">Voice-first assistant • Neon HUD</div>
+<div class="wrap">
+  <div class="jarvis" id="app">
+
+    <!-- HUD column -->
+    <div class="hud-panel">
+      <!-- Desktop HUD (big) -->
+      <div class="hud desktop" id="hudDesktop" aria-hidden="false">
+        <canvas id="waveDesktop"></canvas>
+        <div class="core desktop" id="coreDesktop">
+          <div class="status" id="statusDesktop">Tap ▶ to speak</div>
+          <div class="phase" id="phaseDesktop">Idle</div>
+        </div>
+      </div>
+
+      <!-- Mobile HUD (compact) -->
+      <div class="hud mobile" id="hudMobile" aria-hidden="true">
+        <canvas id="waveMobile"></canvas>
+        <div class="core mobile" id="coreMobile">
+          <div class="status" id="statusMobile">Tap ▶ to speak</div>
+          <div class="phase" id="phaseMobile">Idle</div>
+        </div>
       </div>
     </div>
-    <div class="sub">Status: <span id="globalState">Idle</span></div>
-  </header>
 
-  <div class="center">
-    <div class="hud" id="hud">
-      <canvas id="wave"></canvas>
-
-      <div class="core" id="core">
-        <div class="status" id="statusText">Tap ▶ to speak</div>
-        <div class="phase" id="phaseText">Idle</div>
+    <!-- Controls / transcript column -->
+    <div class="side" id="sidePanel">
+      <div class="brand-row">
+        <div class="logo">X</div>
+        <div>
+          <div class="title">GalaxyX — JARVIS Mode</div>
+          <div class="subtitle">Voice-first assistant • Neon HUD</div>
+        </div>
       </div>
+
+      <div class="caption" id="caption">
+        Say: “Hey GalaxyX, what's the weather?” — or press ▶
+      </div>
+
+      <div class="controls">
+        <button class="btn neon big" id="startBtn">▶ Speak</button>
+        <button class="btn big" id="stopBtn">■ Stop</button>
+        <button class="btn" id="autoBtn">🔁 Auto Listen: Off</button>
+        <select id="voiceSelect" class="voice-select">
+          <option value="jarvis">Jarvis — Deep Male</option>
+          <option value="friday">Friday — Premium Female</option>
+          <option value="neutral">Neutral — Studio</option>
+        </select>
+        <button class="btn" id="backBtn">← Back</button>
+      </div>
+
+      <div class="transcript" id="transcript">
+        <div style="font-weight:700;margin-bottom:6px">Conversation</div>
+      </div>
+
+      <div style="height:8px"></div>
+      <div class="muted">Status: <span id="globalState">Idle</span></div>
     </div>
 
-    <div class="caption" id="caption">
-      Say something like: “Hey GalaxyX, what can you do?”
-    </div>
-
-    <div class="controls">
-      <button class="btn neon" id="startBtn">▶ Speak</button>
-      <button class="btn" id="stopBtn">■ Stop</button>
-      <button class="btn" id="alwaysBtn">🔁 Auto Listen: Off</button>
-      <button class="btn warn" id="exitBtn">Exit</button>
-    </div>
   </div>
-
-  <div class="transcript" id="transcript">
-    <div style="font-weight:700;margin-bottom:6px">Conversation</div>
-  </div>
-
-  <button class="back" id="backBtn">← Back</button>
 </div>
 
 <script>
-/* ENDPOINTS */
-const BASE = "https://galaxy-ai-3.onrender.com";
+/* ========= CONFIG ========= */
+const BASE = "https://galaxy-ai-3.onrender.com"; // change to your host if needed
 const ENDPOINT_STT = BASE + "/stt";
 const ENDPOINT_CHAT = BASE + "/chat";
 const ENDPOINT_TTS = BASE + "/tts";
 
-/* UI elements */
+/* ========= ELEMENTS ========= */
+const isMobile = window.matchMedia("(max-width:980px)").matches;
+
+const hudDesktop = document.getElementById("hudDesktop");
+const hubMobile = document.getElementById("hudMobile");
+const coreDesktop = document.getElementById("coreDesktop");
+const coreMobile = document.getElementById("coreMobile");
+
+const statusDesktop = document.getElementById("statusDesktop");
+const phaseDesktop = document.getElementById("phaseDesktop");
+const statusMobile = document.getElementById("statusMobile");
+const phaseMobile = document.getElementById("phaseMobile");
+
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
-const alwaysBtn = document.getElementById("alwaysBtn");
-const exitBtn = document.getElementById("exitBtn");
+const autoBtn = document.getElementById("autoBtn");
 const backBtn = document.getElementById("backBtn");
-
-const statusText = document.getElementById("statusText");
-const phaseText = document.getElementById("phaseText");
 const caption = document.getElementById("caption");
-const transcript = document.getElementById("transcript");
+const transcriptBox = document.getElementById("transcript");
 const globalState = document.getElementById("globalState");
+const voiceSelect = document.getElementById("voiceSelect");
 
-/* audio */
+/* Choose which HUD to use */
+const HUD = isMobile ? document.getElementById("hudMobile") : document.getElementById("hudDesktop");
+const CORE = isMobile ? document.getElementById("coreMobile") : document.getElementById("coreDesktop");
+const STATUS_EL = isMobile ? document.getElementById("statusMobile") : document.getElementById("statusDesktop");
+const PHASE_EL = isMobile ? document.getElementById("phaseMobile") : document.getElementById("phaseDesktop");
+const CANVAS = isMobile ? document.getElementById("waveMobile") : document.getElementById("waveDesktop");
+
+/* ========= AUDIO / RECORDING ========= */
 let mediaStream = null;
 let recorder = null;
-let isRecording = false;
 let chunks = [];
-
-let audioContext = null;
-let analyser = null;
-let dataArray = null;
-let rafId = null;
-
+let isRecording = false;
 let autoListen = false;
 
-/* Canvas */
-const canvas = document.getElementById("wave");
-const ctx = canvas.getContext("2d");
+/* audio visual */
+let audioCtx = null;
+let analyser = null;
+let rafId = null;
 
+/* waveform canvas setup */
+const canvas = CANVAS;
+const ctx = canvas.getContext("2d");
 function resizeCanvas(){
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
 }
 resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => { resizeCanvas(); });
 
-/* Waveform animation */
 function startVisuals(){
+  if(!analyser) return;
   analyser.fftSize = 2048;
-  const len = analyser.fftSize;
-  dataArray = new Uint8Array(len);
+  const bufferLength = analyser.fftSize;
+  const dataArray = new Uint8Array(bufferLength);
 
   function draw(){
     rafId = requestAnimationFrame(draw);
     analyser.getByteTimeDomainData(dataArray);
-
     ctx.clearRect(0,0,canvas.width,canvas.height);
+
     ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(0,224,255,0.9)";
+    ctx.strokeStyle = "rgba(0,224,255,0.95)";
     ctx.beginPath();
 
-    const slice = canvas.width / len;
+    const sliceWidth = canvas.width / bufferLength;
     let x = 0;
-
-    for(let i=0;i<len;i++){
-      const v = dataArray[i] / 128;
+    for(let i=0;i<bufferLength;i++){
+      const v = dataArray[i] / 128.0;
       const y = v * canvas.height/2;
       if(i===0) ctx.moveTo(x,y);
       else ctx.lineTo(x,y);
-      x += slice;
+      x += sliceWidth;
     }
+    ctx.lineTo(canvas.width, canvas.height/2);
     ctx.stroke();
+
+    // subtle HUD scale on intensity
+    let rms = 0;
+    for(let i=0;i<dataArray.length;i++){ rms += Math.pow((dataArray[i]-128)/128,2); }
+    rms = Math.sqrt(rms / dataArray.length);
+    const scale = 1 + rms * 0.6;
+    HUD.style.transform = `scale(${Math.min(scale,1.12)})`;
   }
   draw();
 }
@@ -263,87 +303,100 @@ function startVisuals(){
 function stopVisuals(){
   if(rafId) cancelAnimationFrame(rafId);
   ctx.clearRect(0,0,canvas.width,canvas.height);
+  HUD.style.transform = "";
 }
 
-/* Transcript */
+/* transcript helper */
 function pushTranscript(role, text){
-  const div = document.createElement("div");
-  div.className = "line " + (role==="user" ? "you" : "ai");
-  div.innerHTML = `<strong>${role==="user"?"You":"GalaxyX"}:</strong> ${text}`;
-  transcript.appendChild(div);
-  transcript.scrollTop = transcript.scrollHeight;
+  const d = document.createElement("div");
+  d.className = "line " + (role==="user" ? "you" : "ai");
+  d.innerHTML = `<strong>${role==="user" ? "You" : "GalaxyX"}:</strong> ${text}`;
+  transcriptBox.appendChild(d);
+  transcriptBox.scrollTop = transcriptBox.scrollHeight;
 }
 
-/* ---- 🎤 START RECORDING (MOBILE FIX) ---- */
-async function startRecording(maxMs=6000){
+/* ========= RECORDING (mobile-safe mime) ========= */
+async function startRecording(maxMs = 8000){
   if(isRecording) return;
   isRecording = true;
-
   globalState.textContent = "Listening";
-  statusText.textContent = "Listening...";
-  phaseText.textContent = "Recording audio";
+  STATUS_EL.textContent = "Listening...";
+  PHASE_EL.textContent = "Recording";
 
   try{
     mediaStream = await navigator.mediaDevices.getUserMedia({ audio:true });
   } catch(e){
-    alert("Mic access denied: " + e.message);
+    alert("Mic permission denied or unavailable: " + e.message);
     isRecording = false;
+    STATUS_EL.textContent = "Tap ▶ to speak";
+    PHASE_EL.textContent = "Idle";
+    globalState.textContent = "Idle";
     return;
   }
 
-  audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const source = audioContext.createMediaStreamSource(mediaStream);
-  analyser = audioContext.createAnalyser();
-  source.connect(analyser);
-
+  /* audio visual setup */
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = audioCtx.createMediaStreamSource(mediaStream);
+  analyser = audioCtx.createAnalyser();
+  src.connect(analyser);
   startVisuals();
 
-  /* AUTO-DETECT BEST MIME TYPE */
+  /* detect best mime for device */
   let mime = "audio/webm";
-  if(MediaRecorder.isTypeSupported("audio/mp4")) mime = "audio/mp4";
-  else if(MediaRecorder.isTypeSupported("audio/ogg")) mime = "audio/ogg";
+  if (MediaRecorder.isTypeSupported("audio/mp4")) mime = "audio/mp4";
+  else if (MediaRecorder.isTypeSupported("audio/ogg")) mime = "audio/ogg";
+  else if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) mime = "audio/webm;codecs=opus";
 
-  recorder = new MediaRecorder(mediaStream, { mimeType:mime });
+  try {
+    recorder = new MediaRecorder(mediaStream, { mimeType: mime });
+  } catch (err) {
+    // fallback to default constructor
+    recorder = new MediaRecorder(mediaStream);
+    mime = recorder.mimeType || mime;
+  }
+
   chunks = [];
+  recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
 
-  recorder.ondataavailable = e => { if(e.data.size>0) chunks.push(e.data); };
-
-  recorder.onstop = async ()=>{
+  recorder.onstop = async () => {
     stopVisuals();
     isRecording = false;
-
-    const blob = new Blob(chunks, { type: recorder.mimeType });
-
+    STATUS_EL.textContent = "Processing...";
+    PHASE_EL.textContent = "Transcribing (STT)";
     globalState.textContent = "Processing";
-    phaseText.textContent = "Transcribing (STT)";
-    statusText.textContent = "Processing audio...";
 
-    try{
+    const blob = new Blob(chunks, { type: recorder.mimeType || mime });
+    const ext = (recorder.mimeType || mime).split("/").pop().split(";")[0] || "webm";
+
+    try {
       const fd = new FormData();
-      fd.append("audio", blob, "voice."+mime.split("/")[1]);
+      fd.append("audio", blob, `voice.${ext}`);
 
-      /* STT */
-      const sttRes = await fetch(ENDPOINT_STT,{method:"POST",body:fd});
-      const sttJson = await sttRes.json();
+      // STT
+      const sttResp = await fetch(ENDPOINT_STT, { method: "POST", body: fd });
+      const sttJson = await sttResp.json();
       const userText = sttJson.text || "";
 
       if(!userText){
         caption.textContent = "Didn't hear anything. Try again.";
-        statusText.textContent = "Idle";
-        phaseText.textContent = "Idle";
+        STATUS_EL.textContent = "Idle";
+        PHASE_EL.textContent = "Idle";
         globalState.textContent = "Idle";
-        if(autoListen) setTimeout(()=>startRecording(),800);
+        if(autoListen) setTimeout(()=> startRecording(maxMs), 700);
         return;
       }
 
       pushTranscript("user", userText);
       caption.textContent = `"${userText}"`;
+      STATUS_EL.textContent = "Thinking...";
+      PHASE_EL.textContent = "Awaiting AI reply";
+      globalState.textContent = "Thinking";
 
-      /* CHAT */
-      const chatRes = await fetch(ENDPOINT_CHAT,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({text:userText})
+      // CHAT
+      const chatRes = await fetch(ENDPOINT_CHAT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: userText })
       });
       const chatJson = await chatRes.json();
       const aiReply = chatJson.reply || "Sorry, I couldn't reply.";
@@ -351,83 +404,117 @@ async function startRecording(maxMs=6000){
       pushTranscript("ai", aiReply);
       caption.textContent = aiReply;
 
-      /* TTS */
-      statusText.textContent = "Speaking...";
-      phaseText.textContent = "Generating audio";
+      // TTS - include voice selection
+      STATUS_EL.textContent = "Speaking...";
+      PHASE_EL.textContent = "Generating audio";
       globalState.textContent = "Speaking";
 
-      const ttsRes = await fetch(ENDPOINT_TTS,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({text:aiReply})
+      const ttsRes = await fetch(ENDPOINT_TTS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: aiReply,
+          voice: voiceSelect.value || "jarvis"
+        })
       });
+
+      if(!ttsRes.ok){
+        throw new Error("TTS failed: " + ttsRes.statusText);
+      }
 
       const audioBlob = await ttsRes.blob();
       const url = URL.createObjectURL(audioBlob);
       const audio = new Audio(url);
 
-      audio.onended = ()=>{
+      audio.onended = () => {
+        STATUS_EL.textContent = "Idle";
+        PHASE_EL.textContent = "Idle";
         globalState.textContent = "Idle";
-        statusText.textContent = "Idle";
-        phaseText.textContent = "Idle";
-        if(autoListen) setTimeout(()=>startRecording(),800);
+        if(autoListen) setTimeout(()=> startRecording(maxMs), 700);
       };
 
-      audio.play();
-    }
-    catch(err){
-      caption.textContent = "Error: "+err.message;
-    }
-    finally {
+      // attempt autoplay; some browsers require a user interaction (we have it)
+      audio.play().catch(err => {
+        console.warn("Audio play failed:", err);
+        // still set idle status
+        STATUS_EL.textContent = "Idle";
+        PHASE_EL.textContent = "Idle";
+        globalState.textContent = "Idle";
+      });
+
+    } catch (err) {
+      console.error(err);
+      caption.textContent = "Error: " + (err.message || err);
+      STATUS_EL.textContent = "Error";
+      PHASE_EL.textContent = err.message || "Network error";
+      globalState.textContent = "Error";
+      if(autoListen) setTimeout(()=> startRecording(maxMs), 1200);
+    } finally {
+      // cleanup
       try{ mediaStream.getTracks().forEach(t=>t.stop()); }catch(e){}
-      try{ audioContext.close(); }catch(e){}
-      mediaStream=null; analyser=null; recorder=null;
+      try{ audioCtx && audioCtx.close(); }catch(e){}
+      mediaStream = null; recorder = null; analyser = null; audioCtx = null; chunks = [];
     }
   };
 
   recorder.start();
 
-  setTimeout(()=>{
-    if(recorder && recorder.state==="recording") recorder.stop();
+  // safety auto-stop
+  setTimeout(()=> {
+    if(recorder && recorder.state === "recording") recorder.stop();
   }, maxMs);
 }
 
-/* STOP */
+/* STOP recording */
 function stopRecordingNow(){
-  try{ if(recorder?.state==="recording") recorder.stop(); }catch(e){}
-  try{ mediaStream?.getTracks().forEach(t=>t.stop()); }catch(e){}
+  try{ if(recorder && recorder.state === "recording") recorder.stop(); }catch(e){}
+  try{ if(mediaStream) mediaStream.getTracks().forEach(t=>t.stop()); }catch(e){}
   stopVisuals();
-
   isRecording = false;
+  STATUS_EL.textContent = "Idle";
+  PHASE_EL.textContent = "Idle";
   globalState.textContent = "Idle";
-  statusText.textContent = "Idle";
-  phaseText.textContent = "Idle";
 }
 
-/* BUTTON EVENTS */
-startBtn.onclick = ()=> startRecording();
-stopBtn.onclick = ()=> stopRecordingNow();
-
-alwaysBtn.onclick = ()=>{
+/* UI events */
+startBtn.addEventListener("click", () => startRecording());
+stopBtn.addEventListener("click", stopRecordingNow);
+autoBtn.addEventListener("click", () => {
   autoListen = !autoListen;
-  alwaysBtn.textContent = autoListen ? "🔁 Auto Listen: On" : "🔁 Auto Listen: Off";
-  alwaysBtn.classList.toggle("neon", autoListen);
+  autoBtn.textContent = autoListen ? "🔁 Auto Listen: On" : "🔁 Auto Listen: Off";
+  autoBtn.classList.toggle("neon", autoListen);
   if(autoListen && !isRecording) startRecording();
-};
+});
 
-exitBtn.onclick = ()=>{
+backBtn.addEventListener("click", ()=> {
   stopRecordingNow();
+  // go back to index
   window.location.href = "index.html";
-};
+});
 
-backBtn.onclick = ()=>{
-  stopRecordingNow();
-  window.location.href = "index.html";
-};
+/* keyboard shortcuts - desktop */
+document.addEventListener("keydown", (e) => {
+  if(e.key === " "){ // space toggles record
+    e.preventDefault();
+    if(isRecording) stopRecordingNow();
+    else startRecording();
+  }
+  if(e.key === "Escape"){ stopRecordingNow(); }
+});
 
-/* INIT */
-caption.textContent = "Press ▶ to start JARVIS.";
+/* small init */
+(function init(){
+  caption.textContent = "Press ▶ to start JARVIS. Tip: enable speaker.";
+  // ensure appropriate HUD visible states (in case CSS media query hasn't updated)
+  if(isMobile){
+    hudDesktop.style.display = "none";
+    document.getElementById("hudMobile").style.display = "flex";
+  } else {
+    document.getElementById("hudMobile").style.display = "none";
+    hudDesktop.style.display = "flex";
+  }
+})();
+
 </script>
-
 </body>
 </html>
