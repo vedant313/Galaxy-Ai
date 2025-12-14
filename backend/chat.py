@@ -17,7 +17,7 @@ HEADERS = {
 }
 
 SYSTEM_PROMPT = (
-    "Tum GalaxyX AI ho — ek ultra-smart Hinglish AI assistant. "
+    "Tum GalaxyX AI ho — ek ultra-smart AI assistant. "
     "Galaxy Tech Corporation ke founder Vedant Bhavsar hain."
 )
 
@@ -28,8 +28,8 @@ async def generate_reply(user_text: str) -> str:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_text}
         ],
-        "temperature": 0.7,
-        "max_tokens": 200
+        "temperature": 1.7,
+        "max_tokens": 700
     }
 
     try:
