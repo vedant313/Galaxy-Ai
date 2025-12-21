@@ -253,10 +253,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 <script>
 /* ============================================================
-   JS — FINAL BUG-FREE VERSION
+   JS — LOCAL BACKEND VERSION (FIXED)
 ============================================================ */
 
-const API_URL = "https://galaxy-ai-3.onrender.com/chat";
+// 🔥 LOCAL BACKEND PE POINT KAR DIYA – ab tera Ollama chalega!
+const API_URL = "http://127.0.0.1:8000/chat";  // Local FastAPI backend
 
 const chatsList = document.getElementById("chatsList");
 const newChatBtn = document.getElementById("newChatBtn");
@@ -403,11 +404,17 @@ async function sendMessage(){
     save();renderChatList();
   }
   catch(err){
-    appendMessage("⚠ Server error: " + err.message,"ai",nowTime());
+    appendMessage("⚠ Server error: " + err.message + " (Ollama serve chal raha hai check kar)","ai",nowTime());
   }
 }
 
 sendBtn.onclick = sendMessage;
+userInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
 
 /* MIC BUTTON — OPEN JARVIS PAGE */
 micBtn.onclick = () => {
